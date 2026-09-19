@@ -6,7 +6,9 @@ Alterar Senha (com regras e toggles), Redefinir Senha e Ajuda.
 
 import re
 import textwrap
+from typing import Optional
 import streamlit as st
+import streamlit.components.v1 as components
 
 from src.auth.user_manager import (
     get_user_profile,
@@ -18,8 +20,60 @@ from src.auth.user_manager import (
     request_password_reset,
     authenticate_user,
     validate_password_strength,
-    validate_email
+    validate_email,
+    create_kmsi_token,
+    validate_kmsi_token,
+    revoke_kmsi_token,
+    revoke_all_user_kmsi_tokens
 )
+
+def render_kmsi_cookie_setter(token: str, max_age_days: int = 30):
+    """Injeta JavaScript para gravar o cookie persistente e espelhar no localStorage."""
+    max_age_seconds = max_age_days * 24 * 60 * 60
+    js = f"""
+    <script>
+        try {{
+            const cookieStr = "b3_kmsi_token={token}; path=/; max-age={max_age_seconds}; SameSite=Lax";
+            document.cookie = cookieStr;
+            if (window.parent && window.parent.document) {{
+                window.parent.document.cookie = cookieStr;
+                try {{
+                    window.parent.localStorage.setItem("b3_kmsi_token", "{token}");
+                }} catch(e) {{}}
+            }}
+        }} catch(err) {{
+            console.warn("Erro ao definir cookie KMSI:", err);
+        }}
+    </script>
+    """
+    components.html(js, height=0, width=0)
+
+def render_kmsi_cookie_clearer():
+    """Injeta JavaScript para apagar o cookie persistente e o localStorage no logout."""
+    js = """
+    <script>
+        try {
+            const cookieStr = "b3_kmsi_token=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
+            document.cookie = cookieStr;
+            if (window.parent && window.parent.document) {
+                window.parent.document.cookie = cookieStr;
+                try {
+                    window.parent.localStorage.removeItem("b3_kmsi_token");
+                } catch(e) {}
+            }
+        } catch(err) {
+            console.warn("Erro ao limpar cookie KMSI:", err);
+        }
+    </script>
+    """
+    components.html(js, height=0, width=0)
+
+def get_kmsi_cookie_token() -> Optional[str]:
+    """Recupera o token KMSI dos cookies enviados pelo navegador."""
+    try:
+        return st.context.cookies.get("b3_kmsi_token")
+    except Exception:
+        return None
 
 def clear_login_fields():
     """Limpa os campos e o estado de visualização de senha da tela de login."""
@@ -49,6 +103,10 @@ def render_login_view():
         </div>
         """).strip(), unsafe_allow_html=True)
 
+        if st.session_state.get("kmsi_clear_cookie"):
+            render_kmsi_cookie_clearer()
+            del st.session_state["kmsi_clear_cookie"]
+
         if "login_usuario" not in st.session_state:
             st.session_state["login_usuario"] = ""
         if "login_senha" not in st.session_state:
@@ -77,6 +135,13 @@ def render_login_view():
             st.caption("Esqueceu a sua senha?")
             st.markdown("</div>", unsafe_allow_html=True)
 
+        kmsi_opt = st.checkbox(
+            "🔒 Permanecer conectado neste dispositivo",
+            value=True,
+            key="login_kmsi",
+            help="Salva um cookie persistente e seguro no navegador para manter sua sessão ativa por até 30 dias mesmo após fechar a janela ou reiniciar o dispositivo."
+        )
+
         btn_entrar = st.button("🚀 Entrar", type="primary", use_container_width=True, key="btn_login_submit")
 
         if btn_entrar:
@@ -87,9 +152,20 @@ def render_login_view():
             else:
                 user_auth = authenticate_user(u_clean, s_clean)
                 if user_auth:
+                    logged_user = user_auth.get("usuario", "masterradar")
                     st.session_state["authenticated"] = True
-                    st.session_state["user"] = user_auth.get("usuario", "masterradar")
+                    st.session_state["user"] = logged_user
                     st.session_state["view"] = "dashboard"
+
+                    if kmsi_opt:
+                        token = create_kmsi_token(logged_user, days=30)
+                        st.session_state["kmsi_set_token"] = token
+                    else:
+                        st.session_state["kmsi_clear_cookie"] = True
+                        curr_tok = get_kmsi_cookie_token()
+                        if curr_tok:
+                            revoke_kmsi_token(curr_tok)
+
                     st.success(f"✅ Bem-vindo, {user_auth.get('nome_completo', u_clean)}!")
                     st.rerun()
                 else:
@@ -113,6 +189,9 @@ def render_login_view():
             st.session_state["authenticated"] = True
             st.session_state["user"] = "masterradar"
             st.session_state["view"] = "dashboard"
+            if kmsi_opt:
+                token = create_kmsi_token("masterradar", days=30)
+                st.session_state["kmsi_set_token"] = token
             st.success("✅ Conectado com sua Conta Google (viniciusamarques2026@gmail.com)!")
             st.rerun()
 

@@ -16,7 +16,17 @@ import textwrap
 from datetime import datetime
 import streamlit as st
 
-from src.ui.auth_views import clear_login_fields, clear_register_fields
+try:
+    from src.ui.auth_views import clear_login_fields, clear_register_fields, get_kmsi_cookie_token
+except ImportError:
+    from src.ui.auth_views import clear_login_fields, clear_register_fields
+    def get_kmsi_cookie_token():
+        try:
+            return st.context.cookies.get("b3_kmsi_token")
+        except Exception:
+            return None
+
+from src.auth.user_manager import revoke_kmsi_token
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 LOGO_PATH = os.path.join(BASE_DIR, "assets", "logo_opcao4_clean.png")
@@ -190,6 +200,10 @@ def render_top_header(authenticated: bool, user_profile: dict, dark_mode: bool =
                 st.markdown("<hr style='margin: 8px 0; border: 0; border-top: 1px solid #334155;'>", unsafe_allow_html=True)
 
                 if st.button("🚪 Sair da conta", key="pop_btn_logout", type="secondary", use_container_width=True):
+                    tok = get_kmsi_cookie_token()
+                    if tok:
+                        revoke_kmsi_token(tok)
+                    st.session_state["kmsi_clear_cookie"] = True
                     st.session_state["authenticated"] = False
                     st.session_state["user"] = None
                     clear_login_fields()

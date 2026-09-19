@@ -20,14 +20,10 @@ st.set_page_config(
 
 import importlib
 
-# Importações de módulos internos com reload garantido
+# Importações de módulos internos com reload garantido (na ordem de dependência)
 import src.ui.powerbi_theme as _theme_mod
 importlib.reload(_theme_mod)
 from src.ui.powerbi_theme import get_powerbi_css, get_plotly_theme
-
-import src.ui.header as _header_mod
-importlib.reload(_header_mod)
-from src.ui.header import render_top_header
 
 import src.ui.auth_views as _auth_mod
 importlib.reload(_auth_mod)
@@ -39,11 +35,20 @@ from src.ui.auth_views import (
     render_reset_password_view,
     render_help_view,
     clear_login_fields,
-    clear_register_fields
+    clear_register_fields,
+    render_kmsi_cookie_setter,
+    render_kmsi_cookie_clearer,
+    get_kmsi_cookie_token
 )
+
+import src.ui.header as _header_mod
+importlib.reload(_header_mod)
+from src.ui.header import render_top_header
 from src.auth.user_manager import (
     get_user_profile,
-    ensure_master_user_exists
+    ensure_master_user_exists,
+    validate_kmsi_token,
+    revoke_kmsi_token
 )
 from src.data.b3_universe import B3_DIVIDEND_UNIVERSE
 from src.engine.recommender import get_ranked_recommendations, get_categorized_portfolios
@@ -91,23 +96,39 @@ from src.ui.components import (
 ensure_master_user_exists()
 
 # -------------------------------------------------------------
-# GERENCIAMENTO DE ESTADO DA SESSÃO (SESSION STATE)
+# GERENCIAMENTO DE ESTADO DA SESSÃO (SESSION STATE) & KMSI
 # -------------------------------------------------------------
+# Verificar cookie de sessão prolongada (KMSI) se ainda não autenticado
 if "authenticated" not in st.session_state:
-    # Exigir login obrigatório antes de acessar a Home / Dashboard
     st.session_state["authenticated"] = False
+    
+    cookie_token = get_kmsi_cookie_token()
+    if cookie_token:
+        kmsi_user = validate_kmsi_token(cookie_token)
+        if kmsi_user:
+            st.session_state["authenticated"] = True
+            st.session_state["user"] = kmsi_user
+            st.session_state["view"] = "dashboard"
 
 if "user" not in st.session_state:
     st.session_state["user"] = None
 
 if "view" not in st.session_state:
-    st.session_state["view"] = "login"
+    st.session_state["view"] = "login" if not st.session_state.get("authenticated", False) else "dashboard"
 
 if "dark_mode" not in st.session_state:
     st.session_state["dark_mode"] = True
 
 if "refresh_key" not in st.session_state:
     st.session_state["refresh_key"] = 0
+
+# Executar atualizações pendentes de cookies KMSI
+if st.session_state.get("kmsi_set_token"):
+    render_kmsi_cookie_setter(st.session_state.pop("kmsi_set_token"), max_age_days=30)
+
+if st.session_state.get("kmsi_clear_cookie"):
+    render_kmsi_cookie_clearer()
+    del st.session_state["kmsi_clear_cookie"]
 
 # Injeção dinâmica do Tema Power BI (Modo Escuro / Claro)
 st.markdown(get_powerbi_css(dark_mode=st.session_state["dark_mode"]), unsafe_allow_html=True)
@@ -219,6 +240,10 @@ with st.sidebar:
             st.rerun()
     with c_sb2:
         if st.button("🚪 Logout", key="sb_btn_logout", use_container_width=True):
+            tok = get_kmsi_cookie_token()
+            if tok:
+                revoke_kmsi_token(tok)
+            st.session_state["kmsi_clear_cookie"] = True
             st.session_state["authenticated"] = False
             st.session_state["user"] = None
             clear_login_fields()

@@ -1,0 +1,42 @@
+{
+  "b10fc745d00ef0529ea060c82ac0771a2502bdde2061e846976d4599e5dbf3c0": {
+    "usuario": "masterradar",
+    "created_at": "2026-09-18T18:05:48.553131",
+    "expires_at": "2026-10-18T18:05:48.553131"
+  },
+  "39e085bf27bc3c98b06794802151167257b91dd88c0aa1af239f40eb974c3c6a": {
+    "usuario": "masterradar",
+    "created_at": "2026-09-18T18:07:19.951655",
+    "expires_at": "2026-10-18T18:07:19.951655"
+  },
+  "dc1b270d7eb85aa1fcd15042cd342cefe11017041ccc364e547a36737a449c26": {
+    "usuario": "masterradar",
+    "created_at": "2026-09-18T18:07:20.018447",
+    "expires_at": "2026-10-18T18:07:20.018447"
+  },
+  "3b1d52f4a81b15e8df4112a52d23168ff1ff885c745405119cff83c3126e7ed2": {
+    "usuario": "masterradar",
+    "created_at": "2026-09-18T18:07:44.029198",
+    "expires_at": "2026-10-18T18:07:44.029198"
+  },
+  "c8e84c1f552dfa66eb3d3a24d6c112db5e32f761d96901944b6940ebb5b36826": {
+    "usuario": "masterradar",
+    "created_at": "2026-09-18T18:07:44.109668",
+    "expires_at": "2026-10-18T18:07:44.109668"
+  },
+  "f12dc64705cbb790b98a08ac05c043bb3b17c6d9b08e7d12cfcdc0e3a872c05a": {
+    "usuario": "masterradar",
+    "created_at": "2026-09-18T19:59:41.260205",
+    "expires_at": "2026-10-18T19:59:41.260205"
+  },
+  "0935daed042b5ffbc3dbfb834b9153e7385f3829d22485cbbc2cb3f231591e7f": {
+    "usuario": "masterradar",
+    "created_at": "2026-09-18T19:59:43.082346",
+    "expires_at": "2026-10-18T19:59:43.082346"
+  },
+  "f39b3f84c21794c1ca5c1fbaf4e8ab32e35eabbb989ea78674e0c1ad4762caa7": {
+    "usuario": "masterradar",
+    "created_at": "2026-09-18T20:18:48.063933",
+    "expires_at": "2026-10-18T20:18:48.063933"
+  }
+}

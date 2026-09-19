@@ -8,7 +8,9 @@ import os
 import json
 import re
 import shutil
-from datetime import datetime
+import secrets
+import hashlib
+from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, Tuple, List
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -280,6 +282,7 @@ def delete_user_account(username: str) -> Tuple[bool, str]:
             except Exception as e:
                 print(f"Erro ao remover pasta {folder}: {e}")
                 
+    revoke_all_user_kmsi_tokens(clean_user)
     return True, f"A conta do usuário '{clean_user}' e todos os seus dados foram apagados permanentemente."
 
 def change_user_password(username: str, current_pwd: str, new_pwd: str, confirm_pwd: str) -> Tuple[bool, str]:
@@ -301,6 +304,7 @@ def change_user_password(username: str, current_pwd: str, new_pwd: str, confirm_
     user_data["senha"] = new_pwd
     user_data["senha_atualizada_em"] = datetime.now().isoformat()
     save_user_profile(username, user_data)
+    revoke_all_user_kmsi_tokens(username)
     return True, "Senha alterada com sucesso!"
 
 def request_password_reset(email: str) -> Tuple[bool, str]:
@@ -330,3 +334,93 @@ def authenticate_user(username_or_email: str, password: str) -> Optional[Dict[st
             if u.get("senha") == password:
                 return u
     return None
+
+# -------------------------------------------------------------
+# GESTÃO DE SESSÕES PROLONGADAS (KMSI - KEEP ME SIGNED IN)
+# -------------------------------------------------------------
+KMSI_FILE = os.path.join(USUARIOS_DIR, "kmsi_sessions.json")
+
+def _load_kmsi_sessions() -> Dict[str, Any]:
+    ensure_base_directories()
+    if os.path.exists(KMSI_FILE):
+        try:
+            with open(KMSI_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {}
+    return {}
+
+def _save_kmsi_sessions(sessions: Dict[str, Any]):
+    ensure_base_directories()
+    try:
+        with open(KMSI_FILE, "w", encoding="utf-8") as f:
+            json.dump(sessions, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        print(f"Erro ao salvar sessões KMSI: {e}")
+
+def create_kmsi_token(username: str, days: int = 30) -> str:
+    """Cria e armazena um token criptográfico para manter a sessão prolongada (KMSI)."""
+    raw_token = secrets.token_urlsafe(32)
+    token_hash = hashlib.sha256(raw_token.encode("utf-8")).hexdigest()
+    
+    sessions = _load_kmsi_sessions()
+    now = datetime.now()
+    valid_sessions = {}
+    for h, data in sessions.items():
+        try:
+            exp = datetime.fromisoformat(data.get("expires_at", ""))
+            if exp > now:
+                valid_sessions[h] = data
+        except Exception:
+            pass
+
+    valid_sessions[token_hash] = {
+        "usuario": username.strip().lower(),
+        "created_at": now.isoformat(),
+        "expires_at": (now + timedelta(days=days)).isoformat()
+    }
+    _save_kmsi_sessions(valid_sessions)
+    return raw_token
+
+def validate_kmsi_token(raw_token: str) -> Optional[str]:
+    """Valida um token KMSI. Retorna o username se válido e não expirado, ou None."""
+    if not raw_token or not isinstance(raw_token, str):
+        return None
+        
+    token_hash = hashlib.sha256(raw_token.strip().encode("utf-8")).hexdigest()
+    sessions = _load_kmsi_sessions()
+    
+    session = sessions.get(token_hash)
+    if not session:
+        return None
+        
+    try:
+        expires_at = datetime.fromisoformat(session.get("expires_at", ""))
+        if expires_at <= datetime.now():
+            del sessions[token_hash]
+            _save_kmsi_sessions(sessions)
+            return None
+        return session.get("usuario")
+    except Exception:
+        return None
+
+def revoke_kmsi_token(raw_token: str) -> bool:
+    """Revoga explicitamente um token KMSI (utilizado no logout)."""
+    if not raw_token or not isinstance(raw_token, str):
+        return False
+    token_hash = hashlib.sha256(raw_token.strip().encode("utf-8")).hexdigest()
+    sessions = _load_kmsi_sessions()
+    if token_hash in sessions:
+        del sessions[token_hash]
+        _save_kmsi_sessions(sessions)
+        return True
+    return False
+
+def revoke_all_user_kmsi_tokens(username: str) -> bool:
+    """Revoga todos os tokens KMSI de um usuário (ao excluir conta ou alterar senha)."""
+    clean_u = username.strip().lower()
+    sessions = _load_kmsi_sessions()
+    new_sessions = {h: data for h, data in sessions.items() if data.get("usuario") != clean_u}
+    _save_kmsi_sessions(new_sessions)
+    return True
+
