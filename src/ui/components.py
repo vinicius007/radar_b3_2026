@@ -72,7 +72,8 @@ def render_kpi_header(ranked_df: pd.DataFrame):
 
 def render_matrix_table(df: pd.DataFrame, title: str = "Matriz Fundamentalista de Proventos B3"):
     """Renderiza a matriz de dados com formatação estilo tabela do Power BI."""
-    st.markdown(f'<div class="pbi-chart-title">{title}</div>', unsafe_allow_html=True)
+    if title:
+        st.markdown(f'<div class="pbi-chart-title">{title}</div>', unsafe_allow_html=True)
     
     if df.empty:
         st.info("Nenhuma ação encontrada com os filtros selecionados.")
@@ -290,6 +291,172 @@ def render_monthly_calendar_grid(stocks: List[Dict[str, Any]]):
         cal_df,
         use_container_width=True
     )
+
+def render_stock_dividend_agenda(market_df: pd.DataFrame):
+    """
+    Renderiza a Agenda de dividendos de AÇÕES com filtros DE e ATÉ,
+    paginação customizável (quantidade de itens por página) e tabela detalhada de proventos.
+    """
+    import math
+    from datetime import date, datetime, timedelta
+
+    if market_df.empty:
+        st.info("Nenhum dado de mercado disponível para gerar a agenda.")
+        return
+
+    curr_year = datetime.now().year
+    today = date.today()
+    
+    events = []
+    stocks_list = market_df.to_dict("records")
+    
+    # Padrões de dias de pagamento para ações da B3
+    day_patterns = {
+        "BBAS3": 28, "PETR4": 20, "VALE3": 15, "ITUB4": 1, "BBDC4": 2, "TAEE11": 15,
+        "CPLE6": 30, "EGIE3": 18, "CMIG4": 22, "TRPL4": 25, "VIVT3": 10, "SANB11": 23,
+        "CSMG3": 27, "SAPR11": 15, "CXSE3": 29, "BBSE3": 14, "KLBN11": 21, "GOAU4": 16
+    }
+    
+    for s in stocks_list:
+        t_clean = s.get("ticker_clean", s.get("ticker", "")).replace(".SA", "")
+        name = s.get("name", t_clean)
+        price = float(s.get("price", 10.0))
+        dpa_12m = float(s.get("dpa_12m", 0.0))
+        p_months = s.get("payment_months", [3, 6, 9, 12])
+        if not p_months:
+            continue
+            
+        num_payments = max(1, len(p_months))
+        val_event = round(dpa_12m / num_payments, 4) if dpa_12m > 0 else round(price * 0.02, 4)
+        yield_event = round((val_event / price) * 100, 2) if price > 0 else 0.0
+        pay_day = day_patterns.get(t_clean, 15)
+        
+        for m in p_months:
+            try:
+                dt_pagamento = date(curr_year, m, min(pay_day, 28))
+                dt_com = dt_pagamento - timedelta(days=16)
+            except Exception:
+                continue
+                
+            tipo = "JCP" if (m % 2 == 0 and t_clean not in ["TAEE11", "CPLE6"]) else "Dividendo"
+            
+            if dt_pagamento < today:
+                status = "✅ Realizado"
+            elif dt_com >= today:
+                status = "🟢 Em Aberto (Comprar até Data COM)"
+            else:
+                status = "⏳ Aguardando Pagamento"
+                
+            events.append({
+                "Ticker": t_clean,
+                "Empresa": name,
+                "Tipo": tipo,
+                "Data COM": dt_com,
+                "Data Pagamento": dt_pagamento,
+                "Valor por Ação (R$)": val_event,
+                "DY do Evento (%)": yield_event,
+                "Cotação Base (R$)": price,
+                "Status": status
+            })
+            
+    if not events:
+        st.info("Nenhum evento de proventos encontrado.")
+        return
+        
+    events_df = pd.DataFrame(events)
+    events_df = events_df.sort_values(by=["Data Pagamento", "Ticker"]).reset_index(drop=True)
+    
+    # Filtros DE / ATÉ e Busca
+    min_date = events_df["Data Pagamento"].min()
+    max_date = events_df["Data Pagamento"].max()
+    
+    val_de = min_date if pd.notna(min_date) else date(curr_year, 1, 1)
+    val_ate = max_date if pd.notna(max_date) else date(curr_year, 12, 31)
+    
+    c_f1, c_f2, c_f3, c_f4 = st.columns([1.2, 1.2, 1.2, 1.2])
+    with c_f1:
+        f_de = st.date_input(
+            "📅 De (Data Pagamento):",
+            value=val_de,
+            key="agenda_data_de"
+        )
+    with c_f2:
+        f_ate = st.date_input(
+            "📅 Até (Data Pagamento):",
+            value=val_ate,
+            key="agenda_data_ate"
+        )
+    with c_f3:
+        f_tipo = st.selectbox(
+            "🏷️ Tipo de Provento:",
+            ["Todos", "Dividendo", "JCP"],
+            index=0,
+            key="agenda_tipo_select"
+        )
+    with c_f4:
+        f_busca = st.text_input(
+            "🔍 Buscar Ticker:",
+            "",
+            placeholder="Ex: BBAS3, PETR4...",
+            key="agenda_search_ticker"
+        ).strip().upper()
+
+    # Filtragem
+    mask = (events_df["Data Pagamento"] >= f_de) & (events_df["Data Pagamento"] <= f_ate)
+    if f_tipo != "Todos":
+        mask = mask & (events_df["Tipo"] == f_tipo)
+    if f_busca:
+        mask = mask & (events_df["Ticker"].str.contains(f_busca))
+        
+    filtered_events = events_df[mask].reset_index(drop=True)
+    total_records = len(filtered_events)
+    
+    # Controles de Paginação
+    c_p1, c_p2, c_p3 = st.columns([1.5, 1.5, 3])
+    with c_p1:
+        page_size = st.selectbox(
+            "📄 Itens por página:",
+            [5, 10, 15, 20, 50],
+            index=1,
+            key="agenda_page_size_selector"
+        )
+    
+    total_pages = max(1, math.ceil(total_records / page_size)) if total_records > 0 else 1
+    with c_p2:
+        page_num = st.number_input(
+            f"Página (1 de {total_pages}):",
+            min_value=1,
+            max_value=total_pages,
+            value=1,
+            step=1,
+            key="agenda_current_page_input"
+        )
+    with c_p3:
+        st.markdown(f"<div style='padding-top:28px; font-size:13px; color:#94A3B8;'>Total de eventos encontrados: <b>{total_records}</b> distribuições</div>", unsafe_allow_html=True)
+        
+    if total_records == 0:
+        st.warning("Nenhum provento encontrado para os filtros selecionados.")
+        return
+
+    # Fatia da página atual
+    start_idx = (page_num - 1) * page_size
+    end_idx = start_idx + page_size
+    page_df = filtered_events.iloc[start_idx:end_idx].copy()
+    
+    # Formatação das colunas para visual limpo
+    display_df = page_df.copy()
+    display_df["Data COM"] = display_df["Data COM"].apply(lambda d: d.strftime("%d/%m/%Y"))
+    display_df["Data Pagamento"] = display_df["Data Pagamento"].apply(lambda d: d.strftime("%d/%m/%Y"))
+    display_df["Valor por Ação (R$)"] = display_df["Valor por Ação (R$)"].apply(lambda v: f"R$ {v:,.4f}".replace(",", "X").replace(".", ",").replace("X", "."))
+    display_df["DY do Evento (%)"] = display_df["DY do Evento (%)"].apply(lambda y: f"{y:.2f}%")
+    display_df["Cotação Base (R$)"] = display_df["Cotação Base (R$)"].apply(lambda p: f"R$ {p:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+    
+    st.dataframe(
+        display_df,
+        use_container_width=True,
+        hide_index=True
+    )
+
 
 def render_news_feed(news_items: List[Dict[str, Any]], stock_ticker: str = ""):
     """Renderiza a lista de notícias corporativas com badges de sentimento e links reais."""
@@ -745,15 +912,7 @@ def render_market_four_rankings_dashboard(ranked_df: pd.DataFrame):
         return
 
     st.markdown("### 🏆 Grandes Rankings de Ações da B3")
-    st.caption("Selecione um dos 4 pilares estratégicos abaixo para explorar a análise detalhada:")
-
-    # Opções do Ranking
-    ranking_options = [
-        "1. As Maiores Oportunidades",
-        "2. As Maiores Pagadoras de Dividendos",
-        "3. As Que Mais Cresceram",
-        "4. As Que Menos Cresceram"
-    ]
+    st.caption("Explore os 4 pilares estratégicos de ações nos tópicos retráteis abaixo:")
 
     # Renderizar os 4 cards visuais com estilo da imagem de referência
     c1, c2, c3, c4 = st.columns(4)
@@ -812,18 +971,8 @@ def render_market_four_rankings_dashboard(ranked_df: pd.DataFrame):
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    selected_rank = st.radio(
-        "Selecione a categoria para visualização aprofundada:",
-        ranking_options,
-        horizontal=True,
-        key="selected_market_rank_tab"
-    )
-
-    st.markdown("---")
-
-    # 1. AS MAIORES OPORTUNIDADES
-    if "Oportunidades" in selected_rank:
-        st.markdown("#### 🎯 As Maiores Oportunidades (Maior Desconto vs Preço Justo)")
+    # 1. 🎯 As Maiores Oportunidades (Maior Desconto vs Preço Justo) (RETRÁTIL)
+    with st.expander("🎯 As Maiores Oportunidades (Maior Desconto vs Preço Justo)", expanded=True):
         st.caption("Ações com maior margem de segurança entre o Preço Justo de Graham e o Preço Teto de Décio Bazin")
         
         # Calcular média ponderada das margens de Bazin e Graham
@@ -865,11 +1014,13 @@ def render_market_four_rankings_dashboard(ranked_df: pd.DataFrame):
         fig.update_yaxes(gridcolor="#334155")
         st.plotly_chart(fig, use_container_width=True)
 
-        render_matrix_table(df_opp.head(15), "📋 Tabela das 15 Maiores Oportunidades em Relação ao Preço Justo")
+        with st.expander("📋 Tabela das 15 Maiores Oportunidades em Relação ao Preço Justo", expanded=True):
+            render_matrix_table(df_opp.head(15), "")
 
-    # 2. AS MAIORES PAGADORAS DE DIVIDENDOS
-    elif "Pagadoras" in selected_rank:
-        st.markdown("#### 💰 As Maiores Pagadoras de Dividendos (Últimos 12 Meses)")
+    st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
+
+    # 2. 💰 As Maiores Pagadoras de Dividendos (Últimos 12 Meses) (RETRÁTIL)
+    with st.expander("💰 As Maiores Pagadoras de Dividendos (Últimos 12 Meses)", expanded=True):
         st.caption("Ranking oficial das empresas que entregaram os maiores proventos aos acionistas")
         
         df_div = ranked_df.sort_values(by="dy_12m", ascending=False).reset_index(drop=True)
@@ -907,11 +1058,13 @@ def render_market_four_rankings_dashboard(ranked_df: pd.DataFrame):
         fig.update_yaxes(gridcolor="#334155")
         st.plotly_chart(fig, use_container_width=True)
 
-        render_matrix_table(df_div.head(15), "📋 Tabela das 15 Maiores Pagadoras de Dividendos")
+        with st.expander("📋 Tabela das 15 Maiores Pagadoras de Dividendos", expanded=True):
+            render_matrix_table(df_div.head(15), "")
 
-    # 3. AS QUE MAIS CRESCERAM
-    elif "Mais Cresceram" in selected_rank:
-        st.markdown("#### 🚀 As Que Mais Cresceram (Expansão de Dividendos & Rentabilidade)")
+    st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
+
+    # 3. 🚀 As Que Mais Cresceram (Expansão de Dividendos & Rentabilidade) (RETRÁTIL)
+    with st.expander("🚀 As Que Mais Cresceram (Expansão de Dividendos & Rentabilidade)", expanded=True):
         st.caption("Empresas com forte taxa de crescimento de proventos (CAGR 3 anos) e elevado retorno sobre capital (ROE)")
         
         df_grow = ranked_df.sort_values(by=["dividend_cagr_3y", "roe"], ascending=[False, False]).reset_index(drop=True)
@@ -949,11 +1102,13 @@ def render_market_four_rankings_dashboard(ranked_df: pd.DataFrame):
         fig.update_yaxes(gridcolor="#334155")
         st.plotly_chart(fig, use_container_width=True)
 
-        render_matrix_table(df_grow.head(15), "📋 Tabela das 15 Ações com Maior Crescimento de Dividendos e Lucros")
+        with st.expander("📋 Tabela das 15 Ações com Maior Crescimento de Dividendos e Lucros", expanded=True):
+            render_matrix_table(df_grow.head(15), "")
 
-    # 4. AS QUE MENOS CRESCERAM
-    else:
-        st.markdown("#### 🛡️ As Que Menos Cresceram (Mais Descontadas / Menor Preço)")
+    st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
+
+    # 4. 🛡️ As Que Menos Cresceram (Mais Descontadas / Menor Preço) (RETRÁTIL)
+    with st.expander("🛡️ As Que Menos Cresceram (Mais Descontadas / Menor Preço)", expanded=True):
         st.caption("Ações negociadas com os menores múltiplos de valuation (menor P/L e menor P/VP), com grande potencial de valorização acumulada")
         
         # Ordenar por menor P/L e menor P/VP
@@ -992,6 +1147,7 @@ def render_market_four_rankings_dashboard(ranked_df: pd.DataFrame):
         fig.update_yaxes(gridcolor="#334155")
         st.plotly_chart(fig, use_container_width=True)
 
-        render_matrix_table(df_value.head(15), "📋 Tabela das 15 Ações com Menor Crescimento de Cotação (Deep Value)")
+        with st.expander("📋 Tabela das 15 Ações com Menor Crescimento de Cotação (Deep Value)", expanded=True):
+            render_matrix_table(df_value.head(15), "")
 
 

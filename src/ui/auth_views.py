@@ -471,7 +471,7 @@ def render_change_password_view(username: str):
                 st.error("❌ " + msg)
 
 def render_reset_password_view():
-    """Tela de Redefinir Senha com envio de link de recuperação."""
+    """Tela de Redefinir Senha com envio de senha provisória por e-mail."""
     col_l1, col_l2, col_l3 = st.columns([1, 1.4, 1])
     with col_l2:
         st.markdown(textwrap.dedent("""
@@ -479,7 +479,7 @@ def render_reset_password_view():
             <div style="text-align: center; margin-bottom: 20px;">
                 <div style="font-size: 38px; margin-bottom: 6px;">📩</div>
                 <div style="font-size: 24px; font-weight: 800; color: #F8FAFC; letter-spacing: -0.5px;">Redefinir Senha</div>
-                <div style="font-size: 13px; color: #94A3B8; margin-top: 4px;">Informe seu e-mail para receber as instruções de recuperação</div>
+                <div style="font-size: 13px; color: #94A3B8; margin-top: 4px;">Informe seu e-mail cadastrado para receber sua nova senha provisória</div>
             </div>
         </div>
         """).strip(), unsafe_allow_html=True)
@@ -487,17 +487,106 @@ def render_reset_password_view():
         if "reset_email" not in st.session_state:
             st.session_state["reset_email"] = ""
 
-        email_recup = st.text_input("E-mail *", placeholder="Digite seu e-mail...", key="reset_email")
-        btn_enviar = st.button("✉️ Enviar link de recuperação", type="primary", use_container_width=True, key="btn_reset_submit")
+        email_recup = st.text_input("E-mail *", placeholder="Digite seu e-mail cadastrado...", key="reset_email")
+        btn_enviar = st.button("✉️ Enviar Senha Provisória por E-mail", type="primary", use_container_width=True, key="btn_reset_submit")
 
         if btn_enviar:
-            ok, msg = request_password_reset(email_recup)
-            if ok:
-                st.success("✅ " + msg)
+            if not email_recup.strip():
+                st.error("❌ Por favor, digite seu e-mail.")
             else:
-                st.error("❌ " + msg)
+                ok, msg, details = request_password_reset(email_recup)
+                if not ok:
+                    st.error("❌ " + msg)
+                else:
+                    if details.get("email_sent"):
+                        st.success("✅ E-mail de redefinição enviado com sucesso!")
+                        st.markdown(textwrap.dedent(f"""
+                        <div class="pbi-auth-card" style="border-left: 4px solid #10B981; margin-top: 14px; padding: 16px;">
+                            <div style="font-size: 15px; font-weight: 700; color: #10B981; margin-bottom: 6px;">
+                                📩 Verifique sua Caixa de Entrada
+                            </div>
+                            <div style="font-size: 13px; color: #CBD5E1; line-height: 1.5;">
+                                Enviamos a senha provisória para a conta <b>[{details.get('usuario')}]</b> no e-mail:<br>
+                                <span style="color: #38BDF8; font-weight: 600;">{details.get('email')}</span>
+                            </div>
+                            <div style="font-size: 12px; color: #94A3B8; margin-top: 10px; border-top: 1px solid #334155; padding-top: 8px;">
+                                💡 <b>Dica:</b> Caso não localize a mensagem de imediato, confira a sua pasta de <b>Spam</b> ou <b>Lixo Eletrônico</b>. Lembre-se de alterar a senha após logar.
+                            </div>
+                        </div>
+                        """).strip(), unsafe_allow_html=True)
+                    else:
+                        st.warning("⚠️ Nova senha provisória gerada e ativada no sistema!")
+                        st.markdown(textwrap.dedent(f"""
+                        <div class="pbi-auth-card" style="border-left: 4px solid #F59E0B; margin-top: 14px; padding: 16px;">
+                            <div style="font-size: 15px; font-weight: 700; color: #F59E0B; margin-bottom: 6px;">
+                                🔑 Senha Provisória Ativada
+                            </div>
+                            <div style="font-size: 13px; color: #CBD5E1; line-height: 1.5;">
+                                Sua conta <b>[{details.get('usuario')}]</b> foi atualizada com uma nova senha provisória válida.<br>
+                                <span style="color: #94A3B8; font-size: 12px;">(O envio automático de e-mail requer configuração da Senha de App SMTP nas opções abaixo).</span>
+                            </div>
+                            <div style="margin: 14px 0; padding: 14px; background: #0B1120; border: 1px solid #38BDF8; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 11px; text-transform: uppercase; color: #94A3B8; letter-spacing: 1px;">Sua Senha Provisória</div>
+                                <div style="font-family: monospace; font-size: 24px; font-weight: 800; color: #38BDF8; letter-spacing: 3px; margin-top: 4px;">
+                                    {details.get('temp_pwd')}
+                                </div>
+                            </div>
+                            <div style="font-size: 12px; color: #FDE68A; background: rgba(245, 158, 11, 0.1); padding: 8px 12px; border-radius: 6px;">
+                                ⚠️ <b>Lembre-se de alterar a senha após logar.</b> Use a senha provisória acima na tela de Login.
+                            </div>
+                        </div>
+                        """).strip(), unsafe_allow_html=True)
 
-        st.markdown("<div style='margin-top: 16px;'>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-top: 12px;'>", unsafe_allow_html=True)
+        # Expander de configuração SMTP para facilitar testes e configuração
+        with st.expander("⚙️ Configuração do Envio de E-mail (SMTP / Gmail)", expanded=False):
+            st.caption("Para disparo real de e-mails via Gmail, utilize uma Senha de App gerada na Conta Google (Segurança > Senhas de app).")
+            from src.auth.email_service import load_smtp_config, save_smtp_config, send_password_reset_email
+            smtp_cfg = load_smtp_config()
+
+            c_smtp1, c_smtp2 = st.columns(2)
+            with c_smtp1:
+                smtp_srv = st.text_input("Servidor SMTP", value=smtp_cfg.get("server", "smtp.gmail.com"), key="cfg_smtp_server")
+                smtp_usr = st.text_input("E-mail Remetente (Gmail)", value=smtp_cfg.get("user", "constecinf@gmail.com"), key="cfg_smtp_user")
+            with c_smtp2:
+                smtp_prt = st.number_input("Porta", value=int(smtp_cfg.get("port", 587)), min_value=1, max_value=65535, key="cfg_smtp_port")
+                current_pwd = smtp_cfg.get("password", "")
+                smtp_pwd_in = st.text_input(
+                    "Senha de App Google (16 letras)",
+                    value=current_pwd,
+                    type="password",
+                    placeholder="ex: abcd efgh ijkl mnop",
+                    help="Gere em: https://myaccount.google.com/apppasswords",
+                    key="cfg_smtp_password"
+                )
+
+            c_sbtn1, c_sbtn2 = st.columns(2)
+            with c_sbtn1:
+                if st.button("💾 Salvar Configurações", key="btn_save_smtp", use_container_width=True):
+                    save_smtp_config({
+                        "server": smtp_srv.strip(),
+                        "port": int(smtp_prt),
+                        "user": smtp_usr.strip(),
+                        "password": smtp_pwd_in.strip()
+                    })
+                    st.success("✅ Configurações salvas em data/smtp_config.json!")
+                    st.rerun()
+
+            with c_sbtn2:
+                if st.button("🧪 Enviar E-mail Teste", key="btn_test_smtp", use_container_width=True):
+                    target = email_recup.strip() or smtp_usr.strip()
+                    st.info(f"Disparando e-mail de teste para: {target}...")
+                    t_ok, t_msg = send_password_reset_email(
+                        to_email=target,
+                        user_name="Usuário Teste",
+                        username="teste.radar",
+                        temp_password="B3@Teste2026"
+                    )
+                    if t_ok:
+                        st.success(f"✅ {t_msg}")
+                    else:
+                        st.error(f"❌ {t_msg}")
+
         if st.button("← Voltar para o Login", key="btn_reset_to_login", use_container_width=True):
             clear_login_fields()
             st.session_state["view"] = "login"

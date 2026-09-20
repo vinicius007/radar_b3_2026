@@ -396,8 +396,314 @@ Retirar o botão mode escuro
 deixando somente os botões os botões Cadasdar e Entrar, quanmmdo sair.
 Melhorar os botões Cadasdar e Entrar.
 
+🌟 O que foi implementado:
+Grade de 6 Indicadores Executivos (3x2):
+
+Rentabilidade Mensal: Exibe -% (ou percentual do mês) + + 0,00% em relação ao mês anterior e ícone de tendência verde.
+Meta Mensal: Exibe R$ 0,00 (ou o valor de meta personalizado salvo).
+Meta Mensal Atingida: Exibe R$ 0,00 (ou total de proventos previstos do mês) + + 0,00% em relação ao mês anterior.
+Rentabilidade atual: Exibe -% (ou rentabilidade acumulada sobre o capital) + + 0,00% em relação ao mês anterior.
+Patrimônio atual: Exibe R$ 0,00 (ou valor total a mercado da carteira) + + 0,00% em relação ao mês anterior.
+Proventos atual: Exibe R$ 0,00 (ou proventos correntes) + + 0,00% em relação ao mês anterior.
+Configuração da "Meta Mensal":
+
+Adicionado o botão 🎯 Meta Mensal no cabeçalho da seção, permitindo definir e salvar a meta de proventos em Reais de forma permanente no perfil do usuário.
+Menu Retrátil para Métricas Detalhadas:
+
+Conforme sua escolha, os 7 cards anteriores (Custo de Aquisição, Lucro/Prejuízo em R$ e %, Proventos Estimados Anuais, Proventos Acumulados desde a compra) foram preservados dentro de um menu retrátil:
+📊 Ver Métricas Detalhadas de Custos e Posição (Custo de Aquisição, Lucro/Prejuízo em R$, etc.)
+
+Isso mantém a página limpa e 100% alinhada ao visual executivo do modelo.
+Estilo Visual e Ícones:
+
+Cada cartão possui borda suave, cantos arredondados, elevação no hover e o ícone gráfico em formato de zigue-zague verde (trending-up) no canto superior direito, compatível com o tema escuro e claro.
+
+======================================================================
+
+Incluir dentro na aba ´Visão Geral do Mercado´, as abas ´Notícias Reais & Dados B3´ e ´Raio-X Individual (Bazin & Graham)´.
+
+Tornar na aba ´Visão Geral do Mercado´, os topicos retratil:
+´Calendário Anual de Proventos da B3´, 
+´Agenda de dividendos de AÇÕES´
+´Ranking Geral de Ações de Dividendos da B3´,
+´Notícias Reais & Análise de Sentimento das Empresas da B3´,
+
+Retirar da aba ´Minha Carteira: Desempenho´, os identificadores:
+´Rentabilidade Mensal´, 
+´Proventos atual´ e 
+´Patrimônio atual´.
+
+🌟 Resumo das Implementações:
+1. Abas Integradas dentro de 📌 Visão Geral do Mercado
+A barra de navegação principal no topo foi simplificada para 5 abas principais:
+
+💼 Minha Carteira
+🚨 Alertas B3
+🏆 Grandes Rankings da B3
+📌 Visão Geral do Mercado
+💰 Simulador de Renda Passiva
+Dentro de 📌 Visão Geral do Mercado, foram criadas sub-abas dedicadas:
+
+📊 Panorama Geral & Agenda B3
+📰 Notícias Reais & Dados B3
+🔍 Raio-X Individual (Bazin & Graham)
+2. Tópicos Retráteis (Expanders) na Aba "Visão Geral do Mercado"
+Conforme solicitado, os tópicos foram encapsulados em painéis retráteis:
+
+📊 Ranking Geral de Ações de Dividendos da B3: Painel retrátil com a tabela comparativa de ativos.
+🗓️ Calendário Anual de Proventos da B3: Painel retrátil com o mapa de calor de pagamentos ao longo dos 12 meses.
+📅 Agenda de dividendos de AÇÕES (Novo):
+Painel retrátil integrado ao calendário.
+Filtros DE e ATÉ: Seletores de intervalo por Data de Pagamento.
+Filtros adicionais: Filtro por tipo (Dividendo, JCP, Todos) e campo para buscar por Ticker.
+Paginação Completa: Seletor de quantidade de itens por página (5, 10, 15, 20, 50) e seletor de página (Página X de Y).
+Colunas com Ticker, Empresa, Tipo, Data COM, Data Pagamento, Valor por Ação (R$), DY (%) e Status.
+📰 Notícias Reais & Análise de Sentimento das Empresas da B3: Painel retrátil com o diagnóstico de sentimento, cotações ao vivo e feed de notícias.
+3. Ajuste em "Minha Carteira: Desempenho"
+Foram retirados os indicadores Rentabilidade Mensal, Proventos atual e Patrimônio atual.
+
+A seção agora exibe os 3 indicadores executivos em uma única linha harmoniosa:
+
+Meta Mensal: Exibe R$ 0,00 (ou a meta configurada pelo usuário via botão 🎯 Meta Mensal).
+Meta Mensal Atingida: Exibe R$ 0,00 (ou o valor de proventos previsto para o mês) com + 0,00% em relação ao mês anterior.
+Rentabilidade atual: Exibe -% (ou percentual acumulado de rentabilidade) com + 0,00% em relação ao mês anterior.
+
+======================================================================
 
 
+Tornar na aba ´Minha Carteira´, os topicos retratil: 
+´Minha Carteira: Desempenho´,
+´Alertas de Proventos do Mês da Carteira´,
+´Histórico: Dividendos´ e
+´Posição Detalhada da Carteira por Ativo´
+
+Na aba ´Visão Geral do Mercado´, no tópico ´Calendário Anual de Proventos da B3´, 
+Incluir ´Agenda de dividendos de AÇÕES´ e retratil, com os filtros DE e ATÉ, paginado e podendo escolher quantos por pagina.
+
+🌟 O que foi configurado:
+1. Tópicos Retráteis na aba 💼 Minha Carteira
+Os 4 tópicos foram encapsulados em menus retráteis (expanders):
+
+📈 Minha Carteira: Desempenho: Menu retrátil com os 3 indicadores executivos (Meta Mensal, Meta Mensal Atingida e Rentabilidade atual), botão de ajuste de meta e o detalhamento das métricas de custo.
+🚨 Alertas de Proventos do Mês da Carteira: Menu retrátil com o seletor interativo de meses de simulação (Jan a Dez), banner e cards das ações pagadoras da carteira.
+📊 Histórico: Dividendos: Menu retrátil com o gráfico de histórico de proventos acumulados.
+📋 Posição Detalhada da Carteira por Ativo: Menu retrátil com a tabela completa de ativos em custódia, Preço Médio e resultados.
+2. Agenda de dividendos de AÇÕES dentro de Calendário Anual de Proventos da B3
+Na aba 📌 Visão Geral do Mercado:
+
+Dentro do tópico retrátil 🗓️ Calendário Anual de Proventos da B3, foi incluída a seção retrátil:
+📅 Agenda de dividendos de AÇÕES
+
+Funcionalidades da Agenda:
+Filtros DE e ATÉ: Seletores de data do pagamento com inicialização dinâmica (sem erros de limites).
+Filtro por Tipo: Dividendo, JCP ou Todos.
+Busca por Ticker: Campo de busca rápida.
+Paginação Completa: Escolha de quantos itens por página (5, 10, 15, 20, 50) e navegação de páginas (Página X de Y).
+Colunas com Ticker, Empresa, Tipo, Data COM, Data Pagamento, Valor por Ação (R$), DY do Evento (%) e Status.
+
+======================================================================
+
+Tornar na aba ´Minha Carteira´, os topicos retratil: 
+📊 Graficos
+	🥧 Gráfico 1: Investimento dos Ativos Cadastrados
+	🥧 Gráfico 2: Valor Real dos Ativos Cadastrados
+	📊 Gráfico 3: Lucro / Perda dos Ativos Cadastrados
+
+Tornar na aba ´Minha Carteira´, os topicos retratil:
+📝 Cadastro Ativos	
+	📝 Cadastrar / Atualizar Ativo na Carteira
+	📜 Histórico Completo das Atualizações & Lançamentos
+
+Tornar na aba ´Alertas B3´, os topicos retratil: 
+	1. Alertas de Proventos do Mês da B3
+	2. Alertas de Ações Abaixo do Valor de Compra (Preço < PM) da B3
+
+Tornar na aba ´Grandes Rankings da B3´, os topicos retratil: 
+	🎯 As Maiores Oportunidades (Maior Desconto vs Preço Justo)
+		📋 Tabela das 15 Maiores Oportunidades em Relação ao Preço Justo
+	💰 As Maiores Pagadoras de Dividendos (Últimos 12 Meses)
+		📋 Tabela das 15 Maiores Pagadoras de Dividendos
+	🚀 As Que Mais Cresceram (Expansão de Dividendos & Rentabilidade)
+		📋 Tabela das 15 Ações com Maior Crescimento de Dividendos e Lucros
+	🛡️ As Que Menos Cresceram (Mais Descontadas / Menor Preço)
+		📋 Tabela das 15 Ações com Menor Crescimento de Cotação (Deep Value)
+
+1. 💼 Aba Minha Carteira
+📊 Graficos (Tópico Retrátil Principal):
+	🥧 Gráfico 1: Investimento dos Ativos Cadastrados (Sub-tópico retrátil com o gráfico de investimento por custo de compra)
+	🥧 Gráfico 2: Valor Real dos Ativos Cadastrados (Sub-tópico retrátil com o gráfico de valor a mercado)
+	📊 Gráfico 3: Lucro / Perda dos Ativos Cadastrados (Sub-tópico retrátil com o gráfico de barras de ganho e perda acumulada)
+📝 Cadastro Ativos (Tópico Retrátil Principal):
+	📝 Cadastrar / Atualizar Ativo na Carteira (Sub-tópico retrátil com o formulário de cadastro de ações)
+	📜 Histórico Completo das Atualizações & Lançamentos (Sub-tópico retrátil com a tabela de transações e ferramenta de exclusão)
+
+2. 🚨 Aba Alertas B3
+🚨 1. Alertas de Proventos do Mês da B3 (Tópico Retrátil): Monitor com seletor de mês e cruzamento com a custódia.
+🔻 2. Alertas de Ações Abaixo do Valor de Compra (Preço < PM) da B3 (Tópico Retrátil): Diagnóstico de ações abaixo do preço médio com margens de Bazin e Graham.
+
+3. 🏆 Aba Grandes Rankings da B3
+Os 4 rankings agora são acessíveis simultaneamente como seções retráteis na página, cada uma com seus indicadores, gráfico e tabela interna retrátil:
+🎯 As Maiores Oportunidades (Maior Desconto vs Preço Justo):
+	📋 Tabela das 15 Maiores Oportunidades em Relação ao Preço Justo (Sub-tópico retrátil com os dados fundamentais)
+💰 As Maiores Pagadoras de Dividendos (Últimos 12 Meses):
+	📋 Tabela das 15 Maiores Pagadoras de Dividendos (Sub-tópico retrátil com os dados de yield e proventos)
+🚀 As Que Mais Cresceram (Expansão de Dividendos & Rentabilidade):
+	📋 Tabela das 15 Ações com Maior Crescimento de Dividendos e Lucros (Sub-tópico retrátil)
+🛡️ As Que Menos Cresceram (Mais Descontadas / Menor Preço):
+	📋 Tabela das 15 Ações com Menor Crescimento de Cotação (Deep Value) (Sub-tópico retrátil)
+
+======================================================================
+
+Na tela de Login, a opção Redefinir senha
+
+1. Quando clicar, ira pedir o email do cadastro
+
+2. Clicar no botão Redefinir a senha
+
+2. Será enviado um email para o email digitado
+
+======================================================================
+
+Na tela de Login, quando clico na opção Redefinir senha
+
+Abri a tela de Redefinir Senha
+
+Digito o email, mas não esta sendo enviado um email para o email digitado, com a nova senha provisoria.
+
+Modelo abaixo de E-mail de Redefinição de Senha
+
+Assunto: Radar B3 - Redefinição de senha solicitada
+		
+Olá, [Nome do Usuário],
+
+Recebemos uma solicitação para redefinir a senha da sua conta [usuário].
+
+Segue abaixo a senha provisoria: 
+
+[senha provisoria]
+
+Lembre-se de alterar a senha após logar.
+
+Se você não solicitou a redefinição, ignore este e-mail. Sua senha atual continuará funcionando normalmente.
+
+Por segurança, nunca compartilhe sua senha com ninguém.
+
+Se precisar de ajuda, entre em contato com nosso suporte: [constecinf@gmail.com].
+
+Atenciosamente,
+
+Equipe  Radar B3
+
+https://relatorio-executivo-de-proventos.onrender.com
+
+
+🛠️ O que foi implementado
+
+1. 📩 Serviço Oficial de Envio de E-mail (src/auth/email_service.py)
+
+Modelo Exato Solicitado: O e-mail disparado segue à risca o padrão informado (com versão em texto puro e versão HTML com identidade visual executiva do Radar B3):
+
+Assunto: Radar B3 - Redefinição de senha solicitada
+		
+Olá, [Nome do Usuário],
+
+Recebemos uma solicitação para redefinir a senha da sua conta [[usuário]].
+
+Segue abaixo a senha provisoria: 
+
+[senha provisoria]
+
+Lembre-se de alterar a senha após logar.
+
+Se você não solicitou a redefinição, ignore este e-mail. Sua senha atual continuará funcionando normalmente.
+
+Por segurança, nunca compartilhe sua senha com ninguém.
+
+Se precisar de ajuda, entre em contato com nosso suporte: [constecinf@gmail.com].
+
+Atenciosamente,
+
+Equipe  Radar B3
+
+https://relatorio-executivo-de-proventos.onrender.com
+
+	Geração de Senha Provisória Forte: Gera automaticamente senhas de 10 dígitos (com letras maiúsculas, minúsculas, números e caracteres especiais) que atendem com nota máxima às regras de segurança do validador.
+	Conexão SMTP Segura: Suporte nativo ao Gmail (smtp.gmail.com:587 com criptografia STARTTLS ou porta 465 SSL).
+
+2. 🔐 Atualização Automática da Conta (src/auth/user_manager.py)
+	Ao solicitar a redefinição, o sistema localiza a conta associada ao e-mail informado.
+	A nova senha provisória é imediatamente salva no cadastro do usuário e todas as sessões anteriores são revogadas por segurança.
+	O usuário já consegue efetuar login imediatamente com a nova senha provisória gerada.
+
+3. 🎨 Tela de Redefinição de Senha e Configuração SMTP (src/ui/auth_views.py)
+	Feedback Completo:
+		Quando o e-mail é enviado via SMTP: exibe mensagem verde orientando a checar a caixa de entrada e spam.
+		Mecanismo de Segurança: Caso o servidor ainda não possua uma Senha de Aplicativo do Gmail configurada ou ocorra instabilidade de rede, a senha provisória gerada é exibida na tela em destaque para que o usuário nunca fique bloqueado do sistema.
+	Painel Retrátil de Configuração SMTP:
+		Adicionado um menu retrátil na própria tela de redefinição: ⚙️ Configuração do Envio de E-mail (SMTP / Gmail).
+		Nele você pode informar ou atualizar a Senha de App do Google (16 caracteres) do e-mail remetente (constecinf@gmail.com) e testar o envio com 1 clique no botão 🧪 Enviar E-mail Teste.
+
+🔑 Como habilitar o envio real pelo Gmail (constecinf@gmail.com)
+
+Para que o Gmail permita o envio automático via SMTP:
+
+1. Acesse sua Conta Google em: https://myaccount.google.com/apppasswords
+ (é necessário que a Verificação em Duas Etapas esteja ativa).
+2. Crie uma nova senha de app com o nome "Radar B3".
+3. O Google gerará uma senha de 16 letras (ex: abcd efgh ijkl mnop).
+4. Abra a tela de Redefinir Senha no sistema, abra o menu ⚙️ Configuração do Envio de E-mail (SMTP / Gmail), 
+	cole as 16 letras no campo de senha e clique em 💾 Salvar Configurações.
+5. Em seguida, clique em 🧪 Enviar E-mail Teste para confirmar o recebimento direto na sua caixa de entrada!
+
+
+A aplicação está rodando normalmente e atualizada em http://localhost:8501
+
+======================================================================
+
+💼 Minha Carteira
+	📊 Minha Carteira: Desempenho
+
+	📊 Ver Métricas Detalhadas de Custos e Posição (Custo de Aquisição, Lucro/Prejuízo em R$, etc.)
+
+	🚨 Alertas de Proventos do Mês da Carteira
+
+	📊 Histórico: Dividendos
+
+	Graficos: 
+		🥧 Gráfico 1: Investimento dos Ativos Cadastrados
+		🥧 Gráfico 2: Valor Real dos Ativos Cadastrados
+		📊 Gráfico 3: Lucro / Perda dos Ativos Cadastrados
+
+	📋 Posição Detalhada da Carteira por Ativo
+
+📝 Cadastro Ativos	
+	📝 Cadastrar / Atualizar Ativo na Carteira
+
+	📜 Histórico Completo das Atualizações & Lançamentos
+
+
+🚨 Alertas B3
+	1. Alertas de Proventos do Mês da B3
+	2. Alertas de Ações Abaixo do Valor de Compra (Preço < PM) da B3
+
+🏆 Grandes Rankings da B3
+	1. 🎯 As Maiores Oportunidades (Maior Desconto vs Preço Justo)
+		📋 Tabela das 15 Maiores Oportunidades em Relação ao Preço Justo
+	2. 💰 As Maiores Pagadoras de Dividendos (Últimos 12 Meses)
+		📋 Tabela das 15 Maiores Pagadoras de Dividendos
+	3. 🚀 As Que Mais Cresceram (Expansão de Dividendos & Rentabilidade)
+		📋 Tabela das 15 Ações com Maior Crescimento de Dividendos e Lucros
+	4. 🛡️ As Que Menos Cresceram (Mais Descontadas / Menor Preço)
+		📋 Tabela das 15 Ações com Menor Crescimento de Cotação (Deep Value)
+
+
+📌 Visão Geral do Mercado
+
+	📰 Notícias Reais & Dados B3
+
+	🔍 Raio-X Individual (Bazin & Graham)
+
+💰 Simulador de Renda Passiva
 
 
 

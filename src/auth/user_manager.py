@@ -307,22 +307,64 @@ def change_user_password(username: str, current_pwd: str, new_pwd: str, confirm_
     revoke_all_user_kmsi_tokens(username)
     return True, "Senha alterada com sucesso!"
 
-def request_password_reset(email: str) -> Tuple[bool, str]:
-    """Processa a solicitação de redefinição de senha."""
+def request_password_reset(email: str) -> Tuple[bool, str, Dict[str, Any]]:
+    """
+    Processa a solicitação de redefinição de senha:
+    1. Valida o e-mail e localiza o usuário cadastrado correspondente.
+    2. Gera uma senha provisória forte e compatível com as regras de segurança.
+    3. Atualiza os dados de perfil do usuário (em Usuario/ e data/).
+    4. Revoga as sessões ativas (KMSI) para segurança.
+    5. Dispara o e-mail oficial com a nova senha provisória.
+    """
     clean_email = email.strip().lower()
     if not validate_email(clean_email):
-        return False, "E-mail inválido. Digite um e-mail correto."
+        return False, "E-mail inválido. Digite um e-mail correto.", {}
         
-    found = False
+    found_user = None
     for u in list_all_users():
         if u.get("email", "").lower() == clean_email:
-            found = True
+            found_user = u
             break
             
-    if not found:
-        return False, f"Nenhum usuário cadastrado com o e-mail '{clean_email}'."
-        
-    return True, f"Link de recuperação enviado com sucesso para {clean_email}! Verifique sua caixa de entrada."
+    if not found_user:
+        return False, f"Nenhum usuário cadastrado com o e-mail '{clean_email}'.", {}
+
+    username = found_user.get("usuario", "")
+    full_profile = get_user_profile(username) or found_user
+    user_display_name = full_profile.get("nome_completo", username)
+
+    # Gerar senha provisória forte (maiúscula, minúscula, dígito e símbolo)
+    from src.auth.email_service import generate_temporary_password, send_password_reset_email
+    temp_pwd = generate_temporary_password()
+
+    # Atualizar perfil do usuário com a nova senha provisória
+    full_profile["senha"] = temp_pwd
+    full_profile["senha_provisoria"] = True
+    full_profile["senha_atualizada_em"] = datetime.now().isoformat()
+    save_user_profile(username, full_profile)
+    revoke_all_user_kmsi_tokens(username)
+
+    # Disparar e-mail de redefinição com a senha provisória
+    email_sent, email_msg = send_password_reset_email(
+        to_email=clean_email,
+        user_name=user_display_name,
+        username=username,
+        temp_password=temp_pwd
+    )
+
+    details = {
+        "email": clean_email,
+        "usuario": username,
+        "nome_completo": user_display_name,
+        "temp_pwd": temp_pwd,
+        "email_sent": email_sent,
+        "email_msg": email_msg
+    }
+
+    if email_sent:
+        return True, f"E-mail de redefinição enviado com sucesso para {clean_email} com sua nova senha provisória! Verifique sua caixa de entrada e pasta de Spam.", details
+    else:
+        return True, f"Nova senha provisória ativada para sua conta! (Aviso: O serviço de e-mail não pôde enviar a mensagem automaticamente: {email_msg})", details
 
 def authenticate_user(username_or_email: str, password: str) -> Optional[Dict[str, Any]]:
     """Autentica usuário por login ou e-mail."""
@@ -423,4 +465,25 @@ def revoke_all_user_kmsi_tokens(username: str) -> bool:
     new_sessions = {h: data for h, data in sessions.items() if data.get("usuario") != clean_u}
     _save_kmsi_sessions(new_sessions)
     return True
+
+def get_user_monthly_goal(username: str) -> float:
+    """Retorna a meta mensal de proventos do usuário (em R$)."""
+    profile = get_user_profile(username)
+    if not profile:
+        return 0.0
+    try:
+        return float(profile.get("meta_mensal", 0.0))
+    except Exception:
+        return 0.0
+
+def set_user_monthly_goal(username: str, goal: float) -> bool:
+    """Atualiza a meta mensal de proventos do usuário."""
+    profile = get_user_profile(username)
+    if not profile:
+        return False
+    try:
+        profile["meta_mensal"] = max(0.0, round(float(goal), 2))
+        return save_user_profile(username, profile)
+    except Exception:
+        return False
 

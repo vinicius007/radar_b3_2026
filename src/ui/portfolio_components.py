@@ -13,6 +13,7 @@ import plotly.express as px
 import streamlit as st
 
 from src.ui.powerbi_theme import get_plotly_theme
+from src.auth.user_manager import get_user_monthly_goal, set_user_monthly_goal
 from src.data.portfolio_manager import (
     load_transactions,
     add_transaction,
@@ -22,9 +23,116 @@ from src.data.portfolio_manager import (
     MONTH_NAMES
 )
 
+def _render_perf_card(value_str: str, title_str: str, footer_str: str = "", footer_negative: bool = False) -> str:
+    footer_cls = "pbi-perf-footer negative" if footer_negative else "pbi-perf-footer"
+    footer_html = f'<div class="{footer_cls}">{footer_str}</div>' if footer_str else '<div style="height: 18px;"></div>'
+    
+    icon_svg = (
+        '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" '
+        'stroke="#10B981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'
+        '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>'
+        '<polyline points="17 6 23 6 23 12"></polyline>'
+        '</svg>'
+    )
+    
+    return f"""
+    <div class="pbi-perf-card">
+        <div class="pbi-perf-top">
+            <div class="pbi-perf-val">{value_str}</div>
+            <div class="pbi-perf-icon">{icon_svg}</div>
+        </div>
+        <div class="pbi-perf-title">{title_str}</div>
+        {footer_html}
+    </div>
+    """.strip()
+
+def render_portfolio_performance_overview(summary: Dict[str, Any], username: str = "masterradar"):
+    """
+    Renderiza os 6 indicadores executivos da seção 'Minha Carteira: Desempenho'
+    em grade 3x2:
+    1. Rentabilidade Mensal
+    2. Meta Mensal
+    3. Meta Mensal Atingida
+    4. Rentabilidade atual
+    5. Patrimônio atual
+    6. Proventos atual
+    """
+    is_empty = summary.get("is_empty", True)
+    total_invested = summary.get("total_invested", 0.0)
+    current_val = summary.get("total_current_value", 0.0)
+    total_profit_loss_pct = summary.get("total_profit_loss_pct", 0.0)
+    monthly_return_pct = summary.get("monthly_return_pct", 0.0)
+    month_divs = summary.get("current_month_dividends", 0.0)
+    
+    # Meta Mensal do usuário
+    monthly_goal = get_user_monthly_goal(username)
+    
+    # Header da Seção com ícone informativo e ajuste de meta
+    col_hdr, col_actions = st.columns([3.8, 1.2])
+    with col_hdr:
+        st.markdown("""
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom: 6px;">
+            <span style="font-size: 15px; font-weight: 600; color: #94A3B8;">Metas de Proventos & Rentabilidade do Investidor</span>
+            <span title="Visão geral de rentabilidade, metas mensais e proventos atingidos na carteira" style="cursor:help; font-size:15px; color:#94A3B8;">ⓘ</span>
+        </div>
+        """, unsafe_allow_html=True)
+    with col_actions:
+        with st.popover("🎯 Meta Mensal", help="Definir ou alterar sua meta mensal de proventos (em R$)"):
+            st.markdown("**Definir Meta Mensal de Proventos:**")
+            new_goal = st.number_input(
+                "Valor da Meta (R$):",
+                min_value=0.0,
+                value=float(monthly_goal),
+                step=50.0,
+                format="%.2f",
+                key="perf_overview_monthly_goal_input"
+            )
+            if st.button("Salvar Meta", key="btn_save_perf_goal", type="primary", use_container_width=True):
+                set_user_monthly_goal(username, new_goal)
+                st.success("Meta atualizada!")
+                st.rerun()
+
+    # Formatação dos 3 indicadores restantes
+    # Card 1: Meta Mensal
+    val_meta = f"R$ {monthly_goal:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+    # Card 2: Meta Mensal Atingida
+    if is_empty or month_divs == 0.0:
+        val_meta_atingida = "R$ 0,00"
+    else:
+        val_meta_atingida = f"R$ {month_divs:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+    # Card 3: Rentabilidade atual
+    if is_empty or total_profit_loss_pct == 0.0:
+        val_rent_atual = "-%"
+    else:
+        val_rent_atual = f"{total_profit_loss_pct:+.2f}%".replace(".", ",")
+
+    # Grade dos 3 cards executivos em linha única (3 colunas)
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(_render_perf_card(
+            value_str=val_meta,
+            title_str="Meta Mensal",
+            footer_str=""
+        ), unsafe_allow_html=True)
+    with c2:
+        st.markdown(_render_perf_card(
+            value_str=val_meta_atingida,
+            title_str="Meta Mensal Atingida",
+            footer_str="+ 0,00% em relação ao mês anterior"
+        ), unsafe_allow_html=True)
+    with c3:
+        st.markdown(_render_perf_card(
+            value_str=val_rent_atual,
+            title_str="Rentabilidade atual",
+            footer_str="+ 0,00% em relação ao mês anterior"
+        ), unsafe_allow_html=True)
+
 def render_portfolio_kpis(summary: Dict[str, Any]):
     """
-    Renderiza os 7 cartões de KPI consolidados da carteira do investidor:
+    Renderiza os 7 cartões de KPI consolidados da carteira do investidor
+    dentro de um expander retrátil para consulta detalhada de custos e posição:
     1. Total Investido de Compra
     2. Patrimônio Real Atual
     3. Lucro / Prejuízo Consolidado (R$ e %)
@@ -33,97 +141,99 @@ def render_portfolio_kpis(summary: Dict[str, Any]):
     6. Total de Dividendos ganhos no mês
     7. Total de Dividendos ganhos desde a compra até hoje
     """
-    total_invested = summary.get("total_invested", 0.0)
-    current_val = summary.get("total_current_value", 0.0)
-    profit_loss = summary.get("total_profit_loss", 0.0)
-    profit_loss_pct = summary.get("total_profit_loss_pct", 0.0)
-    annual_divs = summary.get("total_annual_dividends", 0.0)
-    monthly_divs = summary.get("total_monthly_dividends", 0.0)
-    monthly_return_pct = summary.get("monthly_return_pct", 0.0)
-    month_divs = summary.get("current_month_dividends", 0.0)
-    since_purchase_divs = summary.get("total_dividends_since_purchase", 0.0)
+    with st.expander("📊 Ver Métricas Detalhadas de Custos e Posição (Custo de Aquisição, Lucro/Prejuízo em R$, etc.)", expanded=False):
+        total_invested = summary.get("total_invested", 0.0)
+        current_val = summary.get("total_current_value", 0.0)
+        profit_loss = summary.get("total_profit_loss", 0.0)
+        profit_loss_pct = summary.get("total_profit_loss_pct", 0.0)
+        annual_divs = summary.get("total_annual_dividends", 0.0)
+        monthly_divs = summary.get("total_monthly_dividends", 0.0)
+        monthly_return_pct = summary.get("monthly_return_pct", 0.0)
+        month_divs = summary.get("current_month_dividends", 0.0)
+        since_purchase_divs = summary.get("total_dividends_since_purchase", 0.0)
 
-    pl_arrow = "▲" if profit_loss >= 0 else "▼"
-    pl_color = "#059669" if profit_loss >= 0 else "#DC2626"
-    ret_color = "#059669" if monthly_return_pct >= 0 else "#DC2626"
-    ret_arrow = "▲" if monthly_return_pct >= 0 else "▼"
+        pl_arrow = "▲" if profit_loss >= 0 else "▼"
+        pl_color = "#059669" if profit_loss >= 0 else "#DC2626"
+        ret_color = "#059669" if monthly_return_pct >= 0 else "#DC2626"
+        ret_arrow = "▲" if monthly_return_pct >= 0 else "▼"
 
-    # Primeira linha: 4 KPIs principais
-    c1, c2, c3, c4 = st.columns(4)
+        # Primeira linha: 4 KPIs principais
+        c1, c2, c3, c4 = st.columns(4)
 
-    with c1:
-        st.markdown(textwrap.dedent(f"""
-        <div class="pbi-kpi-card">
-            <div class="pbi-kpi-label">💵 Total Investido de Compra</div>
-            <div class="pbi-kpi-value">R$ {total_invested:,.2f}</div>
-            <div class="pbi-kpi-sub"><span class="pbi-tag-neutral">Custo de Aquisição</span> Acumulado</div>
-        </div>
-        """).strip(), unsafe_allow_html=True)
-
-    with c2:
-        st.markdown(textwrap.dedent(f"""
-        <div class="pbi-kpi-card">
-            <div class="pbi-kpi-label">💎 Patrimônio Real Atual</div>
-            <div class="pbi-kpi-value" style="color:#38BDF8;">R$ {current_val:,.2f}</div>
-            <div class="pbi-kpi-sub"><span class="pbi-tag-positive">● Cotação B3 Ao Vivo</span> a Mercado</div>
-        </div>
-        """).strip(), unsafe_allow_html=True)
-
-    with c3:
-        st.markdown(textwrap.dedent(f"""
-        <div class="pbi-kpi-card">
-            <div class="pbi-kpi-label">📈 Lucro / Prejuízo Consolidado</div>
-            <div class="pbi-kpi-value" style="color:{pl_color};">
-                {pl_arrow} R$ {abs(profit_loss):,.2f}
+        with c1:
+            st.markdown(textwrap.dedent(f"""
+            <div class="pbi-kpi-card">
+                <div class="pbi-kpi-label">💵 Total Investido de Compra</div>
+                <div class="pbi-kpi-value">R$ {total_invested:,.2f}</div>
+                <div class="pbi-kpi-sub"><span class="pbi-tag-neutral">Custo de Aquisição</span> Acumulado</div>
             </div>
-            <div class="pbi-kpi-sub">
-                <span style="color:{pl_color}; font-weight:700;">{profit_loss_pct:+.2f}%</span> Variação de Capital
+            """).strip(), unsafe_allow_html=True)
+
+        with c2:
+            st.markdown(textwrap.dedent(f"""
+            <div class="pbi-kpi-card">
+                <div class="pbi-kpi-label">💎 Patrimônio Real Atual</div>
+                <div class="pbi-kpi-value" style="color:#38BDF8;">R$ {current_val:,.2f}</div>
+                <div class="pbi-kpi-sub"><span class="pbi-tag-positive">● Cotação B3 Ao Vivo</span> a Mercado</div>
             </div>
-        </div>
-        """).strip(), unsafe_allow_html=True)
+            """).strip(), unsafe_allow_html=True)
 
-    with c4:
-        st.markdown(textwrap.dedent(f"""
-        <div class="pbi-kpi-card">
-            <div class="pbi-kpi-label">💰 Proventos Estimados (Ano & Mês)</div>
-            <div class="pbi-kpi-value" style="color:#10B981;">R$ {annual_divs:,.2f}</div>
-            <div class="pbi-kpi-sub"><span class="pbi-tag-positive">~ R$ {monthly_divs:,.2f}/mês</span> em Proventos</div>
-        </div>
-        """).strip(), unsafe_allow_html=True)
-
-    st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
-
-    # Segunda linha: 3 KPIs complementares de proventos e rentabilidade
-    c5, c6, c7 = st.columns(3)
-
-    with c5:
-        st.markdown(textwrap.dedent(f"""
-        <div class="pbi-kpi-card">
-            <div class="pbi-kpi-label">📊 Rentabilidade vs Mês Anterior</div>
-            <div class="pbi-kpi-value" style="color:{ret_color};">
-                {ret_arrow} {monthly_return_pct:+.2f}%
+        with c3:
+            st.markdown(textwrap.dedent(f"""
+            <div class="pbi-kpi-card">
+                <div class="pbi-kpi-label">📈 Lucro / Prejuízo Consolidado</div>
+                <div class="pbi-kpi-value" style="color:{pl_color};">
+                    {pl_arrow} R$ {abs(profit_loss):,.2f}
+                </div>
+                <div class="pbi-kpi-sub">
+                    <span style="color:{pl_color}; font-weight:700;">{profit_loss_pct:+.2f}%</span> Variação de Capital
+                </div>
             </div>
-            <div class="pbi-kpi-sub"><span class="pbi-tag-neutral">Desempenho Relativo</span> Últimos 30 Dias</div>
-        </div>
-        """).strip(), unsafe_allow_html=True)
+            """).strip(), unsafe_allow_html=True)
 
-    with c6:
-        st.markdown(textwrap.dedent(f"""
-        <div class="pbi-kpi-card">
-            <div class="pbi-kpi-label">🗓️ Total Dividendos Ganhos no Mês</div>
-            <div class="pbi-kpi-value" style="color:#00D084;">R$ {month_divs:,.2f}</div>
-            <div class="pbi-kpi-sub"><span class="pbi-tag-positive">Crédito Previsto em Conta</span> Mês Corrente</div>
-        </div>
-        """).strip(), unsafe_allow_html=True)
+        with c4:
+            st.markdown(textwrap.dedent(f"""
+            <div class="pbi-kpi-card">
+                <div class="pbi-kpi-label">💰 Proventos Estimados (Ano & Mês)</div>
+                <div class="pbi-kpi-value" style="color:#10B981;">R$ {annual_divs:,.2f}</div>
+                <div class="pbi-kpi-sub"><span class="pbi-tag-positive">~ R$ {monthly_divs:,.2f}/mês</span> em Proventos</div>
+            </div>
+            """).strip(), unsafe_allow_html=True)
 
-    with c7:
-        st.markdown(textwrap.dedent(f"""
-        <div class="pbi-kpi-card">
-            <div class="pbi-kpi-label">🏆 Proventos Acumulados Desde Compra</div>
-            <div class="pbi-kpi-value" style="color:#F59E0B;">R$ {since_purchase_divs:,.2f}</div>
-            <div class="pbi-kpi-sub"><span class="pbi-tag-neutral">Efeito Bola de Neve</span> Total Recebido</div>
-        </div>
-        """).strip(), unsafe_allow_html=True)
+        st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
+
+        # Segunda linha: 3 KPIs complementares de proventos e rentabilidade
+        c5, c6, c7 = st.columns(3)
+
+        with c5:
+            st.markdown(textwrap.dedent(f"""
+            <div class="pbi-kpi-card">
+                <div class="pbi-kpi-label">📊 Rentabilidade vs Mês Anterior</div>
+                <div class="pbi-kpi-value" style="color:{ret_color};">
+                    {ret_arrow} {monthly_return_pct:+.2f}%
+                </div>
+                <div class="pbi-kpi-sub"><span class="pbi-tag-neutral">Desempenho Relativo</span> Últimos 30 Dias</div>
+            </div>
+            """).strip(), unsafe_allow_html=True)
+
+        with c6:
+            st.markdown(textwrap.dedent(f"""
+            <div class="pbi-kpi-card">
+                <div class="pbi-kpi-label">🗓️ Total Dividendos Ganhos no Mês</div>
+                <div class="pbi-kpi-value" style="color:#00D084;">R$ {month_divs:,.2f}</div>
+                <div class="pbi-kpi-sub"><span class="pbi-tag-positive">Crédito Previsto em Conta</span> Mês Corrente</div>
+            </div>
+            """).strip(), unsafe_allow_html=True)
+
+        with c7:
+            st.markdown(textwrap.dedent(f"""
+            <div class="pbi-kpi-card">
+                <div class="pbi-kpi-label">🏆 Proventos Acumulados Desde Compra</div>
+                <div class="pbi-kpi-value" style="color:#F59E0B;">R$ {since_purchase_divs:,.2f}</div>
+                <div class="pbi-kpi-sub"><span class="pbi-tag-neutral">Efeito Bola de Neve</span> Total Recebido</div>
+            </div>
+            """).strip(), unsafe_allow_html=True)
+
 
 def render_pie_invested_chart(summary: Dict[str, Any]):
     """

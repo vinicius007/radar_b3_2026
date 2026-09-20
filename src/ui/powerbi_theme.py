@@ -445,6 +445,94 @@ div.st-key-top_btn_entrar > button:hover {{
     box-shadow: 0 4px 10px rgba(45, 212, 191, 0.45) !important;
 }}
 
+/* ============================================================ */
+/* MINHA CARTEIRA: DESEMPENHO (GRADE 3x2)                       */
+/* ============================================================ */
+.pbi-perf-container {{
+    margin-bottom: 18px;
+}}
+
+.pbi-perf-header-bar {{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}}
+
+.pbi-perf-main-title {{
+    font-size: 17px;
+    font-weight: 700;
+    color: {text_primary};
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}}
+
+.pbi-perf-card {{
+    background: {card_bg};
+    border: 1px solid {border_color};
+    border-radius: 8px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 125px;
+    height: 100%;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+    margin-bottom: 14px;
+}}
+
+.pbi-perf-card:hover {{
+    border-color: #10B981;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.15);
+    transform: translateY(-2px);
+}}
+
+.pbi-perf-top {{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+}}
+
+.pbi-perf-val {{
+    font-size: 24px;
+    font-weight: 800;
+    color: {text_primary};
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+}}
+
+.pbi-perf-icon {{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}}
+
+.pbi-perf-title {{
+    font-size: 13.5px;
+    font-weight: 500;
+    color: {text_muted};
+    margin-bottom: 8px;
+    line-height: 1.25;
+}}
+
+.pbi-perf-footer {{
+    font-size: 12px;
+    font-weight: 600;
+    color: #10B981;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 18px;
+}}
+
+.pbi-perf-footer.negative {{
+    color: #EF4444;
+}}
+
 </style>
 """
 
