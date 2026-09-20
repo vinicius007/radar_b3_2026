@@ -292,10 +292,9 @@ pip install -r requirements.txt
 python test_full_suite.py
 ```
 
-### 5. Iniciar a Aplicação
+### 5. Iniciar a Aplicação dentro da pasta da aplicação
 ```powershell
 python -m streamlit run app.py
 ```
-Acesse no navegador: **`http://localhost:8501`**.
 
-Para entrar, utilize o login **`constecinf`** (ou **`masterradar`**) com a senha **`@Blm1975`**.
+Acesse no navegador: **`http://localhost:8501`**.
