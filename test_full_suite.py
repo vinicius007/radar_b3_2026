@@ -68,17 +68,23 @@ def test_user_crud():
     print("=== [2/6] Testando CRUD de Novos Usuários e Validações ===")
     
     # 1. Senha fraca rejeitada
-    ok, msg = create_user("Investidor Teste", "user_test", "teste@email.com", "01/01/1990", "+551199999999", "123", "123", True)
+    ok, msg = create_user("Investidor Teste", "user_test", "teste@email.com", "01/01/1990", "+551199999999", "123", "123", True, declaracao_responsabilidade=True)
     assert not ok, "Deveria rejeitar senha fraca"
     print("  ✓ Senha fraca rejeitada com sucesso.")
     
-    # 2. Cadastro válido
-    ok, msg = create_user("Investidor Teste", "user_test", "teste@email.com", "01/01/1990", "+551199999999", "@Investidor2026", "@Investidor2026", True)
+    # 2. Cadastro sem confirmação da Declaração de Responsabilidade rejeitado
+    ok_decl, msg_decl = create_user("Investidor Teste", "user_test", "teste@email.com", "01/01/1990", "+551199999999", "@Investidor2026", "@Investidor2026", True, declaracao_responsabilidade=False)
+    assert not ok_decl, "Deveria rejeitar cadastro sem confirmação da Declaração de Responsabilidade"
+    assert "Declaração de Responsabilidade" in msg_decl
+    print("  ✓ Rejeição por falta de Declaração de Responsabilidade validada com sucesso.")
+
+    # 3. Cadastro válido com Declaração Confirmada
+    ok, msg = create_user("Investidor Teste", "user_test", "teste@email.com", "01/01/1990", "+551199999999", "@Investidor2026", "@Investidor2026", True, declaracao_responsabilidade=True)
     assert ok, f"Falha ao criar usuário: {msg}"
-    print("  ✓ Usuário de teste criado com sucesso.")
+    print("  ✓ Usuário de teste criado com sucesso com Declaração confirmada.")
     
-    # 3. Tentativa de duplicidade rejeitada
-    ok_dup, _ = create_user("Investidor Teste 2", "user_test", "outro@email.com", "01/01/1990", "+551199999999", "@Investidor2026", "@Investidor2026", True)
+    # 4. Tentativa de duplicidade rejeitada
+    ok_dup, _ = create_user("Investidor Teste 2", "user_test", "outro@email.com", "01/01/1990", "+551199999999", "@Investidor2026", "@Investidor2026", True, declaracao_responsabilidade=True)
     assert not ok_dup, "Deveria rejeitar duplicidade de login"
     print("  ✓ Duplicidade de login prevenida com sucesso.")
 

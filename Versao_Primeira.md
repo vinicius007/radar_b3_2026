@@ -660,6 +660,50 @@ A aplicação está rodando normalmente e atualizada em http://localhost:8501
 
 ======================================================================
 
+1. 📍 Opção no Menu Lateral (Sidebar)
+
+Localizada exatamente acima do bloco ### 📌 Resumo Metodológico:
+	Botão com destaque visual: ❤️ Apoie o Radar B3 (sb_btn_donation).
+	Também disponível no menu suspenso do perfil do usuário no cabeçalho superior.
+
+2. 📄 Nova Página: ❤️ Apoie o Radar B3 (
+
+A página foi construída seguindo a identidade visual corporativa Dark Slate do Radar B3, contendo:
+
+Título em Destaque com Letras Maiores:
+❤️ Apoie o Radar B3 (38px, peso 900, em cor de destaque).
+Subtítulo: Seu apoio mantém este projeto vivo.
+Mensagem de Apresentação:
+Explicação sobre a missão do Radar B3 como projeto independente, prático e gratuito.
+🚀 Por que doar? (Cards explicativos com os 5 pilares):
+🌐 Infraestrutura e Hospedagem
+🛠️ Novas Funcionalidades
+🔒 Segurança e Confiabilidade
+📈 Evolução Contínua
+☕ Café para o Desenvolvedor
+💚 Seção de Contribuição via PIX:
+📱 Chave PIX: (62) 99930-8633
+👤 Favorecido: VINICIUS AUGUSTO MARQUES
+📋 Código PIX Copia e Cola: Caixa com botão nativo de cópia rápida em 1 clique:
+text
+
+
+00020126710014BR.GOV.BCB.PIX0114+55629993086330231Ajudando a continuidade do site5204000053039865802BR5924VINICIUS AUGUSTO MARQUES6009SAO PAULO6226052279ZshPqrzBFOYSWAL1iZmY630451FA
+🖼️ QR Code PIX: Renderização em alta definição da imagem do QR Code Itaú salvo em 
+assets/pix_qrcode.png
+.
+🙏 Mensagem de Agradecimento:
+Reconhecimento da importância do apoio da comunidade.
+↩️ Botão de Retorno no Final da Página:
+Botão em largura total ← 🏠 Voltar à Plataforma, redirecionando instantaneamente ao Dashboard principal.
+
+======================================================================
+
+
+Criar um agente "Radar B3" na tela para tirar duvidas sobre Siglas, Termos, atalhos,
+
+======================================================================
+
 💼 Minha Carteira
 	📊 Minha Carteira: Desempenho
 

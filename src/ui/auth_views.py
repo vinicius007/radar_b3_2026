@@ -88,6 +88,7 @@ def clear_register_fields():
     st.session_state["reg_show_pwd"] = False
     st.session_state["reg_nao_resido"] = False
     st.session_state["reg_termos"] = False
+    st.session_state["reg_declaracao_confirmada"] = False
 
 def render_login_view():
     """Tela de Login centralizada conforme especificações completas (campos sempre limpos)."""
@@ -225,6 +226,8 @@ def render_register_view():
             st.session_state["reg_nao_resido"] = False
         if "reg_termos" not in st.session_state:
             st.session_state["reg_termos"] = False
+        if "reg_declaracao_confirmada" not in st.session_state:
+            st.session_state["reg_declaracao_confirmada"] = False
 
         st.markdown("##### 👤 Informações Pessoais")
         nome = st.text_input("Nome completo *", placeholder="Ex: Seu Nome Completo", key="reg_nome", help="Mínimo de 5 caracteres.")
@@ -279,28 +282,55 @@ def render_register_view():
         nao_resido = st.checkbox("Não resido no Brasil", key="reg_nao_resido")
         termos = st.checkbox("Li e concordo com os Termos de uso e Política de Privacidade (LGPD) *", key="reg_termos")
 
+        # Opção: Declaração de Responsabilidade
+        declaracao_confirmada = st.session_state.get("reg_declaracao_confirmada", False)
+        st.markdown("<div style='margin-top: 10px; margin-bottom: 8px;'></div>", unsafe_allow_html=True)
+        if declaracao_confirmada:
+            st.markdown("""
+            <div style="background: rgba(16, 185, 129, 0.12); border-left: 3px solid #10B981; padding: 10px 14px; border-radius: 6px; margin-bottom: 8px;">
+                <span style="color: #10B981; font-weight: 700; font-size: 13px;">✓ Declaração de Responsabilidade confirmada com sucesso!</span>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("📄 Visualizar Declaração de Responsabilidade", key="btn_view_disclaimer_confirmed", use_container_width=True):
+                st.session_state["view"] = "disclaimer"
+                st.rerun()
+        else:
+            st.markdown("""
+            <div style="background: rgba(245, 158, 11, 0.12); border-left: 3px solid #F59E0B; padding: 10px 14px; border-radius: 6px; margin-bottom: 8px;">
+                <span style="color: #F59E0B; font-weight: 700; font-size: 13px;">⚠️ Declaração de Responsabilidade: Pendente de Confirmação *</span>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("📜 Declaração de Responsabilidade", key="btn_view_disclaimer", use_container_width=True, help="Clique para ler e confirmar a Declaração de Responsabilidade"):
+                st.session_state["view"] = "disclaimer"
+                st.rerun()
+
+        st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
         btn_cadastrar = st.button("✅ Cadastrar Conta", type="primary", use_container_width=True, key="btn_reg_submit")
 
         if btn_cadastrar:
-            success, msg = create_user(
-                nome_completo=nome,
-                usuario=usuario,
-                email=email,
-                data_nascimento=nasc,
-                telefone=tel,
-                senha=senha,
-                confirmar_senha=conf_senha,
-                termos_uso=termos,
-                nao_resido_brasil=nao_resido
-            )
-            if success:
-                st.session_state["authenticated"] = True
-                st.session_state["user"] = usuario.strip().lower()
-                st.session_state["view"] = "dashboard"
-                st.success(f"🎉 Conta criada com sucesso! Seja bem-vindo(a), {nome}!")
-                st.rerun()
+            if not st.session_state.get("reg_declaracao_confirmada", False):
+                st.error("❌ Só é possível salvar o cadastro após abrir e clicar em 'Confirmar' na Declaração de Responsabilidade.")
             else:
-                st.error(f"❌ {msg}")
+                success, msg = create_user(
+                    nome_completo=nome,
+                    usuario=usuario,
+                    email=email,
+                    data_nascimento=nasc,
+                    telefone=tel,
+                    senha=senha,
+                    confirmar_senha=conf_senha,
+                    termos_uso=termos,
+                    nao_resido_brasil=nao_resido,
+                    declaracao_responsabilidade=True
+                )
+                if success:
+                    st.session_state["authenticated"] = True
+                    st.session_state["user"] = usuario.strip().lower()
+                    st.session_state["view"] = "dashboard"
+                    st.success(f"🎉 Conta criada com sucesso! Seja bem-vindo(a), {nome}!")
+                    st.rerun()
+                else:
+                    st.error(f"❌ {msg}")
 
         st.markdown("<div style='margin: 14px 0 6px 0; text-align: center;'>", unsafe_allow_html=True)
         if st.button("Já tem uma conta? Faça Login", key="reg_to_login", use_container_width=True):
@@ -308,6 +338,46 @@ def render_register_view():
             st.session_state["view"] = "login"
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
+
+def render_disclaimer_view():
+    """Página de Declaração de Responsabilidade (Disclaimer e Exoneração de Responsabilidade)."""
+    col_l1, col_l2, col_l3 = st.columns([1, 1.8, 1])
+    with col_l2:
+        st.markdown(textwrap.dedent("""
+        <div class="pbi-auth-card" style="text-align: center; padding: 26px 20px 20px 20px; border-top: 4px solid #38BDF8; margin-bottom: 20px;">
+            <div style="font-size: 32px; font-weight: 900; color: #F8FAFC; letter-spacing: 1.5px; line-height: 1.2;">
+                DISCLAIMER
+            </div>
+            <div style="font-size: 13px; font-weight: 600; color: #94A3B8; margin-top: 6px;">
+                Declaração de Responsabilidade & Termos Regulatórios
+            </div>
+        </div>
+        """).strip(), unsafe_allow_html=True)
+
+        st.markdown(textwrap.dedent("""
+        <div class="pbi-auth-card" style="padding: 28px 24px; border-left: 4px solid #F59E0B; margin-bottom: 24px;">
+            <p style="font-size: 15.5px; line-height: 1.8; color: #F1F5F9; text-align: justify; margin-bottom: 20px;">
+                As informações contidas aqui não constituem uma oferta ou recomendação para compra ou venda de ações, ou de quaisquer outros valores mobiliários, nem poderá ser entendida como tal em qualquer jurisdição na qual tal solicitação, oferta ou recomendação sejam consideradas ilegais.
+            </p>
+            <p style="font-size: 15.5px; line-height: 1.8; color: #F1F5F9; text-align: justify; margin-bottom: 24px;">
+                Este aplicativo tampouco oferece conselhos de investimento, tributários ou legais. Os investidores devem buscar orientação profissional sobre investimentos, impostos e legislação antes de investir. O aplicativo e seus colaboradores isentam-se de responsabilidade sobre quaisquer danos resultantes direta ou indiretamente da utilização das informações contidas aqui.
+            </p>
+            <div style="font-size: 20px; font-weight: 900; color: #F8FAFC; text-align: center; letter-spacing: 1px; border-top: 1px solid #334155; padding-top: 20px;">
+                EXONERAÇÃO DE RESPONSABILIDADE
+            </div>
+        </div>
+        """).strip(), unsafe_allow_html=True)
+
+        col_b1, col_b2 = st.columns([1.4, 1])
+        with col_b1:
+            if st.button("Confirmar", type="primary", use_container_width=True, key="btn_confirm_disclaimer"):
+                st.session_state["reg_declaracao_confirmada"] = True
+                st.session_state["view"] = "register"
+                st.rerun()
+        with col_b2:
+            if st.button("← Voltar ao Cadastro", use_container_width=True, key="btn_back_to_register"):
+                st.session_state["view"] = "register"
+                st.rerun()
 
 def render_profile_view(username: str):
     """Tela Minhas Informações com dados editáveis, Avatar V e Zona de Perigo com confirmação."""

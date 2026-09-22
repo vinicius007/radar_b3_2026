@@ -184,6 +184,10 @@ def render_top_header(authenticated: bool, user_profile: dict, dark_mode: bool =
                     st.session_state["view"] = "help"
                     st.rerun()
 
+                if st.button("❤️ Apoie o Radar B3", key="pop_btn_donation", use_container_width=True):
+                    st.session_state["view"] = "donation"
+                    st.rerun()
+
                 st.markdown("<hr style='margin: 8px 0; border: 0; border-top: 1px solid #334155;'>", unsafe_allow_html=True)
 
                 # Modo Escuro (alternância liga/desliga)

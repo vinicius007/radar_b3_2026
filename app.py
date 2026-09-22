@@ -34,6 +34,7 @@ from src.ui.auth_views import (
     render_change_password_view,
     render_reset_password_view,
     render_help_view,
+    render_disclaimer_view,
     clear_login_fields,
     clear_register_fields,
     render_kmsi_cookie_setter,
@@ -93,6 +94,7 @@ from src.ui.components import (
     render_sub_10_bargain_detector,
     render_market_four_rankings_dashboard
 )
+from src.ui.donation_view import render_donation_view
 
 # Garantir existência do usuário master
 ensure_master_user_exists()
@@ -168,9 +170,9 @@ render_top_header(
 if "last_view_rendered" not in st.session_state:
     st.session_state["last_view_rendered"] = None
 
-# Se não estiver autenticado, força a tela de login (ou cadastro/redefinição)
+# Se não estiver autenticado, força a tela de login (ou cadastro/redefinição/doação/disclaimer)
 if not st.session_state.get("authenticated", False):
-    if st.session_state.get("view") not in ["register", "reset_password"]:
+    if st.session_state.get("view") not in ["register", "reset_password", "donation", "disclaimer"]:
         st.session_state["view"] = "login"
 
 current_view = st.session_state.get("view", "login" if not st.session_state.get("authenticated", False) else "dashboard")
@@ -180,7 +182,8 @@ if st.session_state["last_view_rendered"] != current_view:
     if current_view == "login":
         clear_login_fields()
     elif current_view == "register":
-        clear_register_fields()
+        if st.session_state.get("last_view_rendered") != "disclaimer":
+            clear_register_fields()
     st.session_state["last_view_rendered"] = current_view
 
 if current_view == "login":
@@ -188,6 +191,9 @@ if current_view == "login":
     st.stop()
 elif current_view == "register":
     render_register_view()
+    st.stop()
+elif current_view == "disclaimer":
+    render_disclaimer_view()
     st.stop()
 elif current_view == "profile":
     render_profile_view(current_username)
@@ -200,6 +206,9 @@ elif current_view == "reset_password":
     st.stop()
 elif current_view == "help":
     render_help_view()
+    st.stop()
+elif current_view == "donation":
+    render_donation_view()
     st.stop()
 
 # -------------------------------------------------------------
@@ -274,6 +283,12 @@ with st.sidebar:
 
     # 4. Filtro de Score Mínimo
     min_score = st.slider("Score de Qualidade Mínimo:", min_value=0, max_value=100, value=50, step=5)
+
+    st.markdown("---")
+    # Opção: Apoie o Radar B3 (Doação)
+    if st.button("❤️ Apoie o Radar B3", key="sb_btn_donation", use_container_width=True, help="Ajude a manter a plataforma gratuita e no ar!"):
+        st.session_state["view"] = "donation"
+        st.rerun()
 
     st.markdown("---")
     st.markdown("### 📌 Resumo Metodológico")

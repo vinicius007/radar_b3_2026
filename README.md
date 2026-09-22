@@ -2,7 +2,7 @@
 
 Uma plataforma corporativa em Python com **interface executiva no estilo Power BI Dark Slate** voltada para triagem, recomendação, valuation e gestão de carteira real de ações pagadoras de dividendos da **B3 (Bolsa de Valores Brasileira)**.
 
-🌐 **Acesse online**: [https://https://relatorio-executivo-de-proventos-radar.onrender.com](https://https://relatorio-executivo-de-proventos-radar.onrender.com)
+🌐 **Acesse online**: [https://relatorio-executivo-de-proventos.onrender.com](https://relatorio-executivo-de-proventos.onrender.com)
 
 ---
 
@@ -24,12 +24,45 @@ A plataforma conta com um sistema robusto de autenticação, controle de sessão
    - Sistema de verificação com pontuação de força (0 a 100%): mínimo de 8 caracteres, pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial (`!@#$%&*`).
 4. **Cadastro Completo de Usuários**:
    - Validações de tamanho de nome, unicidade de login, padrão de e-mail e telefone internacional.
-5. **Central do Usuário (Header Popover)**:
-   - Menu suspenso com avatar personalizado, atalhos rápidos para *Meu Perfil*, *Alterar Senha*, *Central de Ajuda* e botão seguro de *Encerrar Sessão (Logout)* que revoga tokens ativos.
+5. **Declaração de Responsabilidade Obrigatória (Disclaimer & Exoneração)**:
+   - Consulta mandatória aos termos regulatórios com abertura de página dedicada.
+   - Preserva todos os dados preenchidos no formulário durante a navegação.
+   - Bloqueia a criação do usuário caso a declaração não tenha sido confirmada pelo botão "Confirmar".
+6. **Central do Usuário (Header Popover)**:
+   - Menu suspenso com avatar personalizado, atalhos rápidos para *Meu Perfil*, *Alterar Senha*, *Apoie o Radar B3*, *Central de Ajuda* e botão seguro de *Encerrar Sessão (Logout)* que revoga tokens ativos.
 
 ---
 
-## 📩 2. Redefinição de Senha & Envio de E-mail (Senha Provisória)
+## 📜 2. Declaração de Responsabilidade no Cadastro (Disclaimer Obrigatório)
+
+Para assegurar conformidade jurídica, transparência regulatória e alinhamento com as melhores práticas de mercado, a plataforma implementa uma **Declaração de Responsabilidade (Disclaimer & Exoneração de Responsabilidade)** vinculada obrigatoriamente ao fluxo de cadastro de novos investidores:
+
+### Como Funciona a Opção no Formulário de Cadastro
+1. **Opção Interativa**: Na tela **Cadastre-se**, logo acima do botão final de criação de conta, é exibido o bloco interativo de conformidade:
+   - **Status Pendente**: Exibe alerta âmbar `⚠️ Declaração de Responsabilidade: Pendente de Confirmação *` e o botão **`📜 Declaração de Responsabilidade`**.
+   - **Status Confirmado**: Após a leitura e confirmação, o card torna-se verde esmeralda `✓ Declaração de Responsabilidade confirmada com sucesso!` com o botão secundário `📄 Visualizar Declaração de Responsabilidade` para releitura a qualquer momento.
+2. **Preservação Integral dos Dados Digitados**:
+   - Caso o investidor já tenha preenchido seus dados no formulário (Nome completo, Usuário, E-mail, Nascimento, Telefone, Senha e Confirmação de Senha) antes de abrir a declaração, **nenhuma informação é apagada**. Ao retornar da tela de disclaimer, todos os campos permanecem preenchidos e intactos.
+3. **Página Dedicada de Leitura (`DISCLAIMER`)**:
+   - Apresenta layout corporativo no padrão Power BI Dark Slate contendo a íntegra dos termos legais:
+     > **DISCLAIMER**  
+     > *As informações contidas aqui não constituem uma oferta ou recomendação para compra ou venda de ações, ou de quaisquer outros valores mobiliários, nem poderá ser entendida como tal em qualquer jurisdição na qual tal solicitação, oferta ou recomendação sejam consideradas ilegais.*  
+     > 
+     > *Este aplicativo tampouco oferece conselhos de investimento, tributários ou legais. Os investidores devem buscar orientação profissional sobre investimentos, impostos e legislação antes de investir. O aplicativo e seus colaboradores isentam-se de responsabilidade sobre quaisquer danos resultantes direta ou indiretamente da utilização das informações contidas aqui.*  
+     > 
+     > **EXONERAÇÃO DE RESPONSABILIDADE**
+4. **Botão de Confirmação no Rodapé**:
+   - No final da página encontra-se o botão **`Confirmar`** (destaque primário), que registra formalmente o consentimento na sessão (`reg_declaracao_confirmada = True`) e retorna instantaneamente à tela de cadastro.
+   - Disponibiliza também o botão **`← Voltar ao Cadastro`** caso o usuário deseje retornar sem registrar a confirmação.
+5. **Regra Impeditiva de Segurança (Bloqueio Automático)**:
+   - **O sistema só salva o usuário caso confirme a declaração**.
+   - Se o usuário tentar submeter o cadastro sem confirmação, a aplicação interrompe a operação e exibe:  
+     `❌ Só é possível salvar o cadastro após abrir e clicar em 'Confirmar' na Declaração de Responsabilidade.`
+   - O consentimento formal é armazenado de forma definitiva no arquivo de perfil do usuário (`declaracao_responsabilidade: True` e carimbo de data/hora em `declaracao_responsabilidade_em`).
+
+---
+
+## 📩 3. Redefinição de Senha & Envio de E-mail (Senha Provisória)
 
 O módulo de recuperação de conta (`src/auth/email_service.py` e `src/auth/user_manager.py`) permite aos investidores recuperarem seu acesso de forma automatizada:
 
@@ -45,7 +78,7 @@ Assunto: Radar B3 - Redefinição de senha solicitada
 		
 Olá, [Nome do Usuário],
 
-Recebemos uma solicitação para redefinir a senha da sua conta [[usuário]].
+Recebemos uma solicitação para redefinir a senha da sua conta [usuário].
 
 Segue abaixo a senha provisoria: 
 
@@ -70,7 +103,7 @@ https://relatorio-executivo-de-proventos.onrender.com
 
 ---
 
-## 🔑 3. Como Habilitar o Envio Real de E-mails pelo Gmail
+## 🔑 4. Como Habilitar o Envio Real de E-mails pelo Gmail
 
 Para que a plataforma envie e-mails reais de recuperação para qualquer destinatário através da sua conta Gmail (`constecinf@gmail.com` ou outra):
 
@@ -123,7 +156,7 @@ No painel do Render (ou serviço de hospedagem), adicione em **Environment Varia
 
 ---
 
-## 💼 4. Módulo "Minha Carteira" (Estrutura Retrátil)
+## 💼 5. Módulo "Minha Carteira" (Estrutura Retrátil)
 
 Toda a experiência da carteira foi modularizada em **menus retráteis (`st.expander`)** com abertura padrão (`expanded=True`), permitindo ao investidor recolher e expandir seções conforme sua preferência:
 
@@ -149,7 +182,7 @@ Toda a experiência da carteira foi modularizada em **menus retráteis (`st.expa
 
 ---
 
-## 🚨 5. Central de Alertas B3 (Menus Retráteis)
+## 🚨 6. Central de Alertas B3 (Menus Retráteis)
 
 1. **🚨 1. Alertas de Proventos do Mês da B3** (Retrátil):
    - Monitor de fluxo de dividendos com seletor interativo de mês de referência para a carteira.
@@ -158,7 +191,7 @@ Toda a experiência da carteira foi modularizada em **menus retráteis (`st.expa
 
 ---
 
-## 🏆 6. Grandes Rankings da B3 (Todos Retráteis)
+## 🏆 7. Grandes Rankings da B3 (Todos Retráteis)
 
 Os 4 pilares estratégicos de classificação agora são exibidos diretamente na página em formato retrátil com tabelas fundamentais acopladas:
 
@@ -179,7 +212,7 @@ Os 4 pilares estratégicos de classificação agora são exibidos diretamente na
 
 ---
 
-## 📌 7. Visão Geral do Mercado (Consolidação em Sub-Abas)
+## 📌 8. Visão Geral do Mercado (Consolidação em Sub-Abas)
 
 A aba **Visão Geral do Mercado** integra as análises de mercado em sub-abas organizadas:
 
@@ -199,7 +232,7 @@ A aba **Visão Geral do Mercado** integra as análises de mercado em sub-abas or
 
 ---
 
-## 💰 8. Simulador de Renda Passiva
+## 💰 9. Simulador de Renda Passiva
 
 - Ferramenta interativa de cálculo reverso: o investidor define a **Renda Mensal Desejada em Proventos** (ex.: R$ 2.500,00/mês) e a plataforma calcula:
   - Quantidade de ações necessárias para atingir o objetivo.
@@ -208,7 +241,7 @@ A aba **Visão Geral do Mercado** integra as análises de mercado em sub-abas or
 
 ---
 
-## 📐 9. Metodologia de Valuation Fundamentalista
+## 📐 10. Metodologia de Valuation Fundamentalista
 
 - **Preço Teto de Décio Bazin (Yield 6%)**:
   $$\text{Preço Teto} = \frac{\text{DPA Médio (12M)}}{0{,}06}$$
@@ -222,7 +255,41 @@ A aba **Visão Geral do Mercado** integra as análises de mercado em sub-abas or
 
 ---
 
-## 📁 10. Estrutura Atualizada do Projeto
+## ❤️ 11. Apoie o Radar B3 (Página de Doações Comunitárias via PIX)
+
+O **Radar B3** nasceu como uma plataforma independente, moderna, rápida e 100% gratuita para investidores da B3. Para assegurar a viabilidade técnica e financeira do projeto sem a introdução de planos pagos ou anúncios invasivos, os investidores contam com uma página oficial de contribuição voluntária:
+
+### 1. Acesso & Posicionamento Estratégico
+- **Barra Lateral (Sidebar)**: Botão destacado com gradiente rosa/carmim **`❤️ Apoie o Radar B3`**, posicionado **estrategicamente logo acima do "Resumo Metodológico"**.
+- **Menu Superior do Usuário (Header Popover)**: Atalho direto no menu suspenso do perfil do investidor no cabeçalho superior.
+- **Navegação de Retorno**: Botões dedicados **`← 🏠 Voltar à Plataforma`** no topo e no final da página para retornar imediatamente ao Dashboard principal sem perder nenhuma configuração de tela.
+
+### 2. Identidade Visual & Conteúdo da Página
+- **Título em Destaque com Letras Maiores**:
+  - `❤️ Apoie o Radar B3` (38px, peso 900, cor rosa executiva)
+  - Subtítulo: *`Seu apoio mantém este projeto vivo`* (19px, azul suave)
+- **Mensagem de Apresentação**: Contexto e propósito do Radar B3 em democratizar a análise fundamentalista de dividendos.
+- **🚀 Por que doar? (Os 5 Pilares de Sustentabilidade)**:
+  1. 🌐 **Infraestrutura e Hospedagem**: Custeio de servidores em nuvem de alto desempenho, instâncias de banco de dados e balanceamento de tráfego.
+  2. 🛠️ **Novas Funcionalidades**: Desenvolvimento contínuo de novos radares, indicadores fundamentalistas e ferramentas de gestão de portfólio.
+  3. 🔒 **Segurança e Confiabilidade**: Monitoramento contínuo, rotinas de auditoria, atualizações de dependências e proteção contra vulnerabilidades.
+  4. 📈 **Evolução Contínua**: Otimizações de velocidade, melhorias no design visual executivo e implementação das ideias e feedbacks da comunidade.
+  5. ☕ **Café para o Desenvolvedor**: Reconhecimento pelo trabalho e incentivo para longas madrugadas de código e aprimoramento contínuo.
+
+### 3. Integração PIX de Pagamento Instantâneo
+- **💚 Faça sua contribuição via PIX**:
+  - 📱 **Chave PIX Celular**: `(62) 99930-8633`
+  - 👤 **Favorecido**: `VINICIUS AUGUSTO MARQUES`
+  - 📋 **Código PIX Copia e Cola**: Caixa com formatação especial e botão de cópia com 1 clique:
+    ```text
+    00020126710014BR.GOV.BCB.PIX0114+55629993086330231Ajudando a continuidade do site5204000053039865802BR5924VINICIUS AUGUSTO MARQUES6009SAO PAULO6226052279ZshPqrzBFOYSWAL1iZmY630451FA
+    ```
+  - 🖼️ **QR Code Dinâmico Itaú**: Renderização direta da imagem oficial em alta definição armazenada em `assets/pix_qrcode.png`, compatível com leitura por qualquer aplicativo bancário nacional.
+- **🙏 Mensagem de Agradecimento**: Mensagem final reforçando a união com a comunidade: *"Juntos podemos construir a melhor plataforma gratuita de análise e acompanhamento de investimentos da comunidade. ❤️"*
+
+---
+
+## 📁 12. Estrutura Atualizada do Projeto
 
 ```
 b3_dividend_radar/
@@ -231,6 +298,8 @@ b3_dividend_radar/
 ├── README.md                  # Documentação completa e guia de uso
 ├── test_engine.py             # Testes unitários do motor de dividendos e mercado
 ├── test_full_suite.py         # Suite completa de testes de regressão
+├── assets/                    # Identidades visuais e mídias estáticas
+│   └── pix_qrcode.png         # QR Code oficial do PIX para doações
 ├── Usuario/                   # Diretório de persistência de usuários e sessões KMSI
 │   ├── Master/dados_perfil.json
 │   ├── masterradar/dados_perfil.json
@@ -244,7 +313,7 @@ b3_dividend_radar/
 └── src/
     ├── auth/                  # Módulo de Autenticação, Usuários e E-mails
     │   ├── __init__.py
-    │   ├── user_manager.py    # Gestão de perfis, senhas, KMSI e redefinição
+    │   ├── user_manager.py    # Gestão de perfis, senhas, KMSI, validações e redefinição
     │   └── email_service.py   # Serviço SMTP Gmail, templates e senha provisória
     ├── data/                  # Fontes de dados e motores de cálculo
     │   ├── __init__.py
@@ -263,14 +332,15 @@ b3_dividend_radar/
         ├── __init__.py
         ├── powerbi_theme.py   # CSS executivo corporativo Dark Slate Power BI
         ├── header.py          # Cabeçalho executivo corporativo e popover de usuário
-        ├── auth_views.py      # Telas de Login, Cadastro, KMSI, Senha e SMTP
+        ├── auth_views.py      # Telas de Login, Cadastro, Disclaimer, KMSI, Senha e SMTP
+        ├── donation_view.py   # Tela de Doação, QR Code e PIX Copia e Cola
         ├── components.py      # Rankings, agenda paginada, notícias e Raio-X
         └── portfolio_components.py # Gráficos de rosca, barras e tabela da carteira
 ```
 
 ---
 
-## 🚀 11. Como Instalar e Executar Localmente
+## 🚀 13. Como Instalar e Executar Localmente
 
 ### 1. Clonar ou Acessar o Diretório
 ```powershell

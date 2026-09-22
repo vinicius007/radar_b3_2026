@@ -180,7 +180,8 @@ def validate_password_strength(password: str) -> Tuple[bool, List[str], int]:
     return is_valid, errors, score
 
 def create_user(nome_completo: str, usuario: str, email: str, data_nascimento: str, telefone: str,
-                senha: str, confirmar_senha: str, termos_uso: bool, nao_resido_brasil: bool = False) -> Tuple[bool, str]:
+                senha: str, confirmar_senha: str, termos_uso: bool, nao_resido_brasil: bool = False,
+                declaracao_responsabilidade: bool = False) -> Tuple[bool, str]:
     """Cadastra novo usuário garantindo validação de duplicidade e regras de negócio."""
     if len(nome_completo.strip()) < 5:
         return False, "O Nome Completo deve ter no mínimo 5 caracteres."
@@ -221,6 +222,9 @@ def create_user(nome_completo: str, usuario: str, email: str, data_nascimento: s
         
     if not termos_uso:
         return False, "É obrigatório concordar com os Termos de Uso e Política de Privacidade (LGPD)."
+
+    if not declaracao_responsabilidade:
+        return False, "É obrigatório ler e confirmar a Declaração de Responsabilidade (Disclaimer) antes de cadastrar."
         
     new_profile = {
         "nome_completo": nome_completo.strip(),
@@ -231,6 +235,8 @@ def create_user(nome_completo: str, usuario: str, email: str, data_nascimento: s
         "senha": senha,
         "nao_resido_brasil": bool(nao_resido_brasil),
         "termos_uso_privacidade": True,
+        "declaracao_responsabilidade": True,
+        "declaracao_responsabilidade_em": datetime.now().isoformat(),
         "avatar_letter": nome_completo.strip()[0].upper(),
         "is_master": False,
         "criado_em": datetime.now().isoformat()

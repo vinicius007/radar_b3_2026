@@ -533,6 +533,43 @@ div.st-key-top_btn_entrar > button:hover {{
     color: #EF4444;
 }}
 
+.st-key-sb_btn_donation button,
+div.st-key-sb_btn_donation > button,
+div[data-testid="stButton"].st-key-sb_btn_donation button {{
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.18) 0%, rgba(225, 29, 72, 0.28) 100%) !important;
+    border: 1.5px solid #F43F5E !important;
+    color: #FFF1F2 !important;
+    font-weight: 800 !important;
+    font-size: 14px !important;
+    letter-spacing: 0.3px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 14px rgba(244, 63, 94, 0.25) !important;
+    transition: all 0.2s ease !important;
+}}
+
+.st-key-sb_btn_donation button:hover,
+div.st-key-sb_btn_donation > button:hover {{
+    background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%) !important;
+    color: #FFFFFF !important;
+    border-color: #FB7185 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 18px rgba(244, 63, 94, 0.5) !important;
+}}
+
+.st-key-pop_btn_donation button,
+div.st-key-pop_btn_donation > button {{
+    background: rgba(244, 63, 94, 0.12) !important;
+    border: 1px solid #F43F5E !important;
+    color: #FECDD3 !important;
+    font-weight: 700 !important;
+}}
+
+.st-key-pop_btn_donation button:hover,
+div.st-key-pop_btn_donation > button:hover {{
+    background: #F43F5E !important;
+    color: #FFFFFF !important;
+}}
+
 </style>
 """
 
