@@ -700,7 +700,20 @@ Botão em largura total ← 🏠 Voltar à Plataforma, redirecionando instantane
 ======================================================================
 
 
-Criar um agente "Radar B3" na tela para tirar duvidas sobre Siglas, Termos, atalhos,
+Criar um agente feminino, nome Radarzinha, com voz feminia sexy, contendo todas as informações do site, 
+
+Siglas, 
+Termos, 
+atalhos para as funçõesm abas, ou opções,
+duvidas,
+sugestões,
+sobre investimento, 
+como investir,
+como qual momento devo comprar e vender determinada ação da minha carteira,
+como as melhores estrategias de investimentos,
+como montar uma carteira de dividendos, para ter retorno de X reias mensais,
+
+e o que mais achar devido.
 
 ======================================================================
 
