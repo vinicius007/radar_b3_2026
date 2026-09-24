@@ -3,7 +3,7 @@
 Uma plataforma corporativa em Python com **interface executiva no estilo Power BI Dark Slate** voltada para triagem, recomendação, valuation e gestão de carteira real de ações pagadoras de dividendos da **B3 (Bolsa de Valores Brasileira)**.
 
 🌐 **Acesse online**: [https://relatorio-executivo-de-proventos.onrender.com](https://relatorio-executivo-de-proventos.onrender.com)
-
+---
 ---
 
 ## 🔐 1. Acesso, Autenticação e Perfis Multi-Usuário
