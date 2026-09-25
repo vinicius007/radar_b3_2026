@@ -298,7 +298,7 @@ with st.sidebar:
 
     st.markdown("---")
     # Opção: Conversar com a Radarzinha
-    if st.button("💃 Conversar com a Radarzinha", key="sb_btn_radarzinha", use_container_width=True, help="Converse com a Radarzinha, sua mentora inteligente com voz sexy"):
+    if st.button("💃 Conversar com a Radarzinha", key="sb_btn_radarzinha", use_container_width=True, help="Converse com a Radarzinha, sua mentora inteligente"):
         st.session_state["view"] = "radarzinha"
         st.rerun()
 
