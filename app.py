@@ -95,6 +95,9 @@ from src.ui.components import (
     render_market_four_rankings_dashboard
 )
 from src.ui.donation_view import render_donation_view
+import src.ui.radarzinha_view as _radarzinha_ui_mod
+importlib.reload(_radarzinha_ui_mod)
+from src.ui.radarzinha_view import render_radarzinha_tab, render_radarzinha_view, render_stop_speech_script
 
 # Garantir existência do usuário master
 ensure_master_user_exists()
@@ -220,6 +223,15 @@ def load_market_data(force_refresh: bool = False):
 
 ranked_df = load_market_data(force_refresh=False)
 
+if current_view == "radarzinha":
+    render_radarzinha_view(ranked_df=ranked_df, current_profile=current_profile, is_tab=False)
+    st.stop()
+
+# Interromper qualquer áudio residual da Radarzinha ao sair da tela ou sob solicitação
+if current_view != "radarzinha" or st.session_state.get("stop_speech_trigger", False):
+    render_stop_speech_script()
+    st.session_state["stop_speech_trigger"] = False
+
 # -------------------------------------------------------------
 # TOPO LADO ESQUERDO: MENU RETRÁTIL COM OPÇÕES DE MENU
 # -------------------------------------------------------------
@@ -285,6 +297,11 @@ with st.sidebar:
     min_score = st.slider("Score de Qualidade Mínimo:", min_value=0, max_value=100, value=50, step=5)
 
     st.markdown("---")
+    # Opção: Conversar com a Radarzinha
+    if st.button("💃 Conversar com a Radarzinha", key="sb_btn_radarzinha", use_container_width=True, help="Converse com a Radarzinha, sua mentora inteligente com voz sexy"):
+        st.session_state["view"] = "radarzinha"
+        st.rerun()
+
     # Opção: Apoie o Radar B3 (Doação)
     if st.button("❤️ Apoie o Radar B3", key="sb_btn_donation", use_container_width=True, help="Ajude a manter a plataforma gratuita e no ar!"):
         st.session_state["view"] = "donation"
@@ -321,12 +338,13 @@ st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 # -------------------------------------------------------------
 # LAYOUT CENTRAL OU DETALHES: NAVEGAÇÃO PRINCIPAL POR ABAS
 # -------------------------------------------------------------
-tab_portfolio, tab_alerts, tab_rankings4, tab_overview, tab_simulator = st.tabs([
+tab_portfolio, tab_alerts, tab_rankings4, tab_overview, tab_simulator, tab_radarzinha = st.tabs([
     "💼 Minha Carteira",
     "🚨 Alertas B3",
     "🏆 Grandes Rankings da B3",
     "📌 Visão Geral do Mercado",
-    "💰 Simulador de Renda Passiva"
+    "💰 Simulador de Renda Passiva",
+    "💃 Radarzinha AI"
 ])
 
 # =============================================================
@@ -643,6 +661,12 @@ with tab_simulator:
     sim_ticker = st.selectbox("Selecione o ativo base para a simulação:", ticker_options, index=0, key="sim_base_ticker")
     sim_stock = ranked_df[ranked_df["ticker_clean"] == sim_ticker].iloc[0].to_dict()
     render_passive_income_calculator(sim_stock)
+
+# =============================================================
+# 6. ABA RADARZINHA AI (MENTORA & CONSELHEIRA DE DIVIDENDOS)
+# =============================================================
+with tab_radarzinha:
+    render_radarzinha_tab(ranked_df=ranked_df, current_profile=current_profile)
 
 # -------------------------------------------------------------
 # RODAPÉ INSTITUCIONAL

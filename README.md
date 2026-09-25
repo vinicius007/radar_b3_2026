@@ -3,7 +3,27 @@
 Uma plataforma corporativa em Python com **interface executiva no estilo Power BI Dark Slate** voltada para triagem, recomendação, valuation e gestão de carteira real de ações pagadoras de dividendos da **B3 (Bolsa de Valores Brasileira)**.
 
 🌐 **Acesse online**: [https://relatorio-executivo-de-proventos.onrender.com](https://relatorio-executivo-de-proventos.onrender.com)
+
 ---
+
+## 📑 Sumário Executivo
+
+1. [🔐 1. Acesso, Autenticação e Perfis Multi-Usuário](#-1-acesso-autenticação-e-perfis-multi-usuário)
+2. [📜 2. Declaração de Responsabilidade no Cadastro (Disclaimer Obrigatório)](#-2-declaração-de-responsabilidade-no-cadastro-disclaimer-obrigatório)
+3. [📩 3. Redefinição de Senha & Envio de E-mail (Senha Provisória)](#-3-redefinição-de-senha--envio-de-e-mail-senha-provisória)
+4. [🔑 4. Como Habilitar o Envio Real de E-mails pelo Gmail](#-4-como-habilitar-o-envio-real-de-e-mails-pelo-gmail)
+5. [💼 5. Módulo "Minha Carteira" (Estrutura Retrátil & 7 KPIs)](#-5-módulo-minha-carteira-estrutura-retrátil)
+6. [🚨 6. Central de Alertas B3 (Menus Retráteis)](#-6-central-de-alertas-b3-menus-retráteis)
+7. [🏆 7. Grandes Rankings da B3 (Todos Retráteis)](#-7-grandes-rankings-da-b3-todos-retráteis)
+8. [📌 8. Visão Geral do Mercado (Consolidação em Sub-Abas & Agenda Paginada)](#-8-visão-geral-do-mercado-consolidação-em-sub-abas)
+9. [💰 9. Simulador de Renda Passiva](#-9-simulador-de-renda-passiva)
+10. [📐 10. Metodologia de Valuation Fundamentalista](#-10-metodologia-de-valuation-fundamentalista)
+11. [❤️ 11. Apoie o Radar B3 (Página de Doações Comunitárias via PIX)](#️-11-apoie-o-radar-b3-página-de-doações-comunitárias-via-pix)
+12. [💃 12. Radarzinha AI — Mentora Inteligente de Dividendos (Voz Feminina Sexy & Conhecimento B3)](#-12-radarzinha-ai--mentora-inteligente-de-dividendos-voz-feminina-sexy--conhecimento-b3)
+13. [🧪 13. Bateria Completa de Testes Automatizados (100% de Sucesso)](#-13-bateria-completa-de-testes-automatizados-100-de-sucesso)
+14. [📁 14. Estrutura Atualizada do Projeto](#-14-estrutura-atualizada-do-projeto)
+15. [🚀 15. Como Instalar e Executar Localmente](#-15-como-instalar-e-executar-localmente)
+
 ---
 
 ## 🔐 1. Acesso, Autenticação e Perfis Multi-Usuário
@@ -289,7 +309,116 @@ O **Radar B3** nasceu como uma plataforma independente, moderna, rápida e 100% 
 
 ---
 
-## 📁 12. Estrutura Atualizada do Projeto
+## 💃 12. Radarzinha AI — Mentora Inteligente de Dividendos (Voz Feminina Sexy & Conhecimento B3)
+
+A **Radarzinha** é a agente de inteligência artificial oficial e conselheira executiva do Radar B3. Desenvolvida com uma personalidade feminina, confiante, charmosa, inteligente e acolhedora, ela atua como mentora particular do investidor através de chat interativo executivo e **síntese de voz feminina nativa**:
+
+### 1. Persona & Estilo de Atendimento
+- **Tom de Voz Exclusivo**: Charmoso, sofisticado, carinhoso ("meu bem", "querido investidor", "meu futuro milionário da renda passiva") e com altíssimo rigor técnico fundamentalista.
+- **Voz Feminina Sexy e Suave**:
+  - Implementada via **Web Speech API** nativa do navegador (zero latência, sem custos e sem dependências pesadas).
+  - Seleção otimizada para vozes femininas brasileiras (`Microsoft Maria`, `Google português do Brasil`, `Francisca`).
+  - Calibração de Tom (Pitch: 1.08) e Cadência (Rate: 0.96) para soar aveludada, clara e envolvente.
+  - Alternador de voz automática (`🔊 Voz da Radarzinha Ativa / 🔇 Mudo`), botão de teste (`💋 Ouvir Saudação`), botão de interrupção (`⏹️ Parar Voz`) e botões de áudio individuais (`🔊 Ouvir`) em cada resposta.
+
+### 2. Base de Conhecimento Abrangente
+A Radarzinha possui domínio completo de todos os tópicos fundamentais da B3:
+1. **Dicionário Completo de Siglas & Métricas da B3**:
+   - DY (Dividend Yield), DPA, LPA, VPA, P/L, P/VP, ROE, CAGR, Payout, Margem Líquida, Dívida Líquida/EBITDA, Preço Teto Bazin (6%), Valor Justo Graham, Score B3, Data COM/EX, JCP e Preço Médio (PM).
+2. **Momento Exato de COMPRA e VENDA de Ações**:
+   - **Quando Comprar**: Cotações com desconto em relação ao Preço Teto Bazin (garantindo DY >= 6% a.a.), margem de segurança positiva de Graham, e ações da carteira com Preço de mercado < Preço Médio (PM) em empresas sólidas e lucrativas.
+   - **Quando Vender**: Princípio Barsi de que ações de dividendos não se vendem por oscilações normais; vender somente se os fundamentos da empresa se deteriorarem de forma permanente, se o endividamento explodir ou se houver bolha especulativa irracional (P/L astronômico e DY < 1%).
+3. **Melhores Estratégias de Investimentos em Dividendos**:
+   - Filosofia Décio Bazin (Preço Teto de 6%, corte de endividamento, assiduidade nos proventos).
+   - Metodologia Luiz Barsi Filho (Carteira Previdenciária de Ações, foco em quantidade e proventos, reinvestimento contínuo).
+   - Value Investing de Benjamin Graham (foco no valor real e margem de segurança).
+   - Alocação nos setores perenes **BEST** (Bancos, Energia, Saneamento, Telecom/Seguros).
+4. **Montagem de Carteira para R$ X Mensais**:
+   - Extrai valores monetários da pergunta do investidor (ex.: R$ 1.000, R$ 2.000, R$ 5.000, R$ 10.000/mês).
+   - Calcula matematicamente o Patrimônio Alvo ($\text{Renda Anual} / \text{DY Médio}$) com base em yield médio sustentável de 8% a.a.
+   - Recomenda a distribuição setorial nos 5 setores perenes e o escalonamento para receber proventos todos os meses.
+5. **Diagnóstico Contextual em Tempo Real da Carteira Real**:
+   - Lê a carteira do usuário conectado, informa o total investido, patrimônio a mercado, proventos mensais previstos e aponta ações com Preço < PM como oportunidades de aporte.
+6. **Atalhos e Guia do Site**:
+   - Orienta onde encontrar cada recurso no Radar B3 (Carteira, Alertas B3, Grandes Rankings, Visão Geral, Notícias, Simulador e Doações).
+
+### 3. Navegação & Acesso Rápido
+- **Aba Principal no Dashboard**: **`💃 Radarzinha AI`**.
+- **Botão no Menu Lateral (Sidebar)**: **`💃 Conversar com a Radarzinha`**.
+- **Menu do Topo (Header Popover)**: **`💃 Falar com a Radarzinha`**.
+- **6 Chips de Perguntas Rápidas de 1 Clique**:
+  - `🎯 Melhores ações abaixo do Teto`
+  - `⏰ Quando comprar e vender?`
+  - `💰 Montar carteira de R$ 2.000/mês`
+  - `🔍 Analisar minha carteira e PM`
+  - `📖 Dicionário de Siglas (P/L, ROE, Bazin)`
+  - `🧭 Onde acho cada função no site?`
+
+### 4. Botões auxiliares
+1º. Parar Imediatamente ao Clicar em "Voltar":
+
+  - Agora, tanto o botão superior quanto o inferior ← 🏠 Voltar ao Dashboard disparam o cancelamento forçado (window.speechSynthesis.cancel()) em todos os níveis da janela do navegador.
+  - Além disso, o Dashboard principal possui uma rotina de segurança que, ao carregar, corta qualquer resquício de fala ativo.
+
+2º. Desativação Efetiva pelo Ícone / Alternador de Som:
+
+  - Ao desativar o alternador 🔊 Voz da Radarzinha (passando para mudo), a voz é interrompida no mesmo instante, o buffer de fala é limpo e novas reproduções ficam bloqueadas até que você reative o som.
+
+3º. Botão "⏹️ Parar" Dedicado e de Fácil Acesso:
+
+  - Na Barra Superior de Controles: Foi adicionado o botão em destaque carmim ⏹️ Parar Voz, que silencia a Radarzinha imediatamente com 1 clique.
+  - No Card do Player de Áudio: Botão nativo ⏹️ Parar com resposta instantânea em 0ms.
+  - Nas Mensagens do Chat: Enquanto a Radarzinha estiver falando determinada mensagem, o botão dessa mensagem se transforma dinamicamente em ⏹️ Parar (em vermelho). Clicando nele, ela para de falar aquela resposta.
+
+---
+
+## 🚀 13. INICIANDO TESTES DO DIVIDEND RADAR B3...
+
+=== [1/6] Testando Usuário Master ===
+  ✓ Validado com sucesso: Usuario\Master\dados_perfil.json
+  ✓ Validado com sucesso: Usuario\masterradar\dados_perfil.json
+  ✓ Validado com sucesso: data\masterradar\dados_perfil.json
+  ✓ Autenticação do masterradar por login e e-mail OK!
+=== [2/6] Testando CRUD de Novos Usuários e Validações ===
+  ✓ Senha fraca rejeitada com sucesso.
+  ✓ Rejeição por falta de Declaração de Responsabilidade validada com sucesso.
+  ✓ Usuário de teste criado com sucesso com Declaração confirmada.
+  ✓ Duplicidade de login prevenida com sucesso.
+  ✓ Alteração de perfil e proteção de login OK.
+  ✓ Exclusão permanente de conta OK.
+=== [3/6] Testando os 7 KPIs e Carteira Segregada ===
+  ✓ 1. Total Investido de Compra: R$ 50.376,15
+  ✓ 2. Patrimônio Real Atual: R$ 56.275,30
+  ✓ 3. Lucro / Prejuízo Consolidado: R$ 5.899,15 (+11.71%)
+  ✓ 4. Proventos Anuais & Mensais: R$ 4.454,95 (R$ 371,25/mês)
+  ✓ 5. Rentabilidade vs Mês Anterior: +3.36%
+  ✓ 6. Total Dividendos no Mês: R$ 406,30
+  ✓ 7. Total Dividendos Desde Compra: R$ 6.236,93
+=== [4/6] Testando Alertas e Gráfico Histórico de Dividendos ===
+  ✓ Alertas do Mês (Setembro): 4 ações pagadoras detectadas.
+  ✓ Alertas Preço < PM: 3 ações monitoradas.
+  ✓ Histórico de Dividendos 6 Meses: ['ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET'] - Total: R$ 2.246,04
+=== [5/6] Testando Detector de Ações e 4 Grandes Rankings ===
+  ✓ Ações abaixo de R$ 10,00 detectadas na B3: 7 ativos.
+  ✓ 1. Maior Oportunidade Graham: BRSR6 (+237.0%)
+  ✓ 2. Maior Pagadora DY 12M: CSNA3 (19.33%)
+  ✓ 3. Que Mais Cresceu CAGR 3Y: PRIO3 (+30.0%)
+  ✓ 4. Que Menos Cresceu / Menor P/L: BRSR6 (P/L 3.8x)
+=== [6/6] Testando Agente Inteligente Radarzinha (Voz & Conhecimento) ===
+  ✓ Persona e saudações da Radarzinha validadas com sucesso.
+  ✓ Extração de metas monetárias (R$ X mensais) OK.
+  ✓ Orientações de Momento de Compra e Venda validadas.
+  ✓ Planejamento de carteira para meta mensal (R$ 3.000) validado.
+  ✓ Glossário e siglas da B3 explicados com precisão.
+  ✓ Integração contextual com a carteira real do investidor OK.
+
+=======================================================
+🎉 TODOS OS TESTES PASSARAM COM 100% DE SUCESSO!
+=======================================================
+
+---
+
+## 📁 14. Estrutura Atualizada do Projeto
 
 ```
 b3_dividend_radar/
@@ -311,6 +440,9 @@ b3_dividend_radar/
 │   ├── constecinf/            # Dados e lançamentos do usuário constecinf
 │   └── masterradar/           # Dados e lançamentos do usuário masterradar
 └── src/
+    ├── agent/                 # Módulo de Inteligência Artificial Conversacional
+    │   ├── __init__.py
+    │   └── radarzinha_engine.py # Motor de conhecimento, persona, B3 e voz da Radarzinha
     ├── auth/                  # Módulo de Autenticação, Usuários e E-mails
     │   ├── __init__.py
     │   ├── user_manager.py    # Gestão de perfis, senhas, KMSI, validações e redefinição
@@ -334,13 +466,14 @@ b3_dividend_radar/
         ├── header.py          # Cabeçalho executivo corporativo e popover de usuário
         ├── auth_views.py      # Telas de Login, Cadastro, Disclaimer, KMSI, Senha e SMTP
         ├── donation_view.py   # Tela de Doação, QR Code e PIX Copia e Cola
+        ├── radarzinha_view.py # Tela da Radarzinha AI, Chat Executivo e Síntese de Voz
         ├── components.py      # Rankings, agenda paginada, notícias e Raio-X
         └── portfolio_components.py # Gráficos de rosca, barras e tabela da carteira
 ```
 
 ---
 
-## 🚀 13. Como Instalar e Executar Localmente
+## 🚀 15. Como Instalar e Executar Localmente
 
 ### 1. Clonar ou Acessar o Diretório
 ```powershell

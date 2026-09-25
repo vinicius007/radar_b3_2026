@@ -184,6 +184,10 @@ def render_top_header(authenticated: bool, user_profile: dict, dark_mode: bool =
                     st.session_state["view"] = "help"
                     st.rerun()
 
+                if st.button("💃 Falar com a Radarzinha", key="pop_btn_radarzinha", use_container_width=True):
+                    st.session_state["view"] = "radarzinha"
+                    st.rerun()
+
                 if st.button("❤️ Apoie o Radar B3", key="pop_btn_donation", use_container_width=True):
                     st.session_state["view"] = "donation"
                     st.rerun()

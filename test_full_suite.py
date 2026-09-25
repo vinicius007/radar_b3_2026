@@ -33,6 +33,7 @@ from src.data.portfolio_manager import (
     get_portfolio_dividend_history
 )
 from src.engine.recommender import get_ranked_recommendations
+from src.agent.radarzinha_engine import RadarzinhaEngine, get_radarzinha_response
 
 def test_master_user():
     print("=== [1/6] Testando Usuário Master ===")
@@ -165,6 +166,48 @@ def test_detector_and_rankings():
     val = ranked_df[ranked_df["pl"] > 0].sort_values(by="pl", ascending=True)
     print(f"  ✓ 4. Que Menos Cresceu / Menor P/L: {val.iloc[0]['ticker_clean']} (P/L {val.iloc[0]['pl']:.1f}x)")
 
+def test_radarzinha_agent():
+    print("=== [6/6] Testando Agente Inteligente Radarzinha (Voz & Conhecimento) ===")
+    engine = RadarzinhaEngine()
+    
+    # 1. Teste de Saudação e Voz
+    assert "Radarzinha" in engine.GREETING, "Saudação deve conter nome da Radarzinha"
+    assert "liberdade financeira" in engine.VOICE_INTRO, "Intro de voz deve mencionar liberdade financeira"
+    print("  ✓ Persona e saudações da Radarzinha validadas com sucesso.")
+
+    # 2. Teste de Extração de Valores Monetários
+    val1 = engine.extract_monetary_value("Quero receber 2.000 reais mensais")
+    assert val1 == 2000.0, f"Falha na extração de 2000: {val1}"
+    val2 = engine.extract_monetary_value("Como ganhar 5 mil por mês?")
+    assert val2 == 5000.0, f"Falha na extração de 5 mil: {val2}"
+    print("  ✓ Extração de metas monetárias (R$ X mensais) OK.")
+
+    # 3. Teste de Dúvida: Momento de Compra e Venda
+    ans_cv, tts_cv = engine.generate_response("em qual momento devo comprar e vender determinada ação da minha carteira?")
+    assert "DEVE COMPRAR" in ans_cv
+    assert "DEVE VENDER" in ans_cv
+    assert "Teto" in ans_cv
+    assert len(tts_cv) > 20
+    print("  ✓ Orientações de Momento de Compra e Venda validadas.")
+
+    # 4. Teste de Dúvida: Montagem de Carteira de R$ X
+    ans_x, tts_x = engine.generate_response("como montar uma carteira para ter retorno de 3000 reais mensais")
+    assert "3.000" in ans_x
+    assert "BEST" in ans_x
+    print("  ✓ Planejamento de carteira para meta mensal (R$ 3.000) validado.")
+
+    # 5. Teste de Dúvida: Siglas e Termos da B3
+    ans_sig, tts_sig = engine.generate_response("me explique o que é DY, P/L, ROE e Preço Teto de Bazin")
+    assert "Dividend Yield" in ans_sig
+    assert "Lucro" in ans_sig
+    assert "Bazin" in ans_sig
+    print("  ✓ Glossário e siglas da B3 explicados com precisão.")
+
+    # 6. Teste de Contexto da Carteira do Usuário
+    ans_usr, tts_usr = engine.generate_response("como está minha carteira?", username="masterradar")
+    assert "Total Investido" in ans_usr or "carteira" in ans_usr
+    print("  ✓ Integração contextual com a carteira real do investidor OK.")
+
 def main():
     print("\n🚀 INICIANDO TESTES DO DIVIDEND RADAR B3...\n")
     test_master_user()
@@ -172,6 +215,7 @@ def main():
     test_portfolio_7_kpis()
     test_alerts_and_history()
     test_detector_and_rankings()
+    test_radarzinha_agent()
     print("\n=======================================================")
     print("🎉 TODOS OS TESTES PASSARAM COM 100% DE SUCESSO!")
     print("=======================================================\n")

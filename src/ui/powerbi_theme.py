@@ -570,6 +570,80 @@ div.st-key-pop_btn_donation > button:hover {{
     color: #FFFFFF !important;
 }}
 
+.st-key-sb_btn_radarzinha button,
+div.st-key-sb_btn_radarzinha > button,
+div[data-testid="stButton"].st-key-sb_btn_radarzinha button {{
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.22) 0%, rgba(219, 39, 119, 0.32) 100%) !important;
+    border: 1.5px solid #EC4899 !important;
+    color: #FDF2F8 !important;
+    font-weight: 800 !important;
+    font-size: 14px !important;
+    letter-spacing: 0.3px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 14px rgba(236, 72, 153, 0.25) !important;
+    transition: all 0.2s ease !important;
+}}
+
+.st-key-sb_btn_radarzinha button:hover,
+div.st-key-sb_btn_radarzinha > button:hover {{
+    background: linear-gradient(135deg, #EC4899 0%, #BE185D 100%) !important;
+    color: #FFFFFF !important;
+    border-color: #F472B6 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 18px rgba(236, 72, 153, 0.5) !important;
+}}
+
+.st-key-btn_test_voice button,
+div.st-key-btn_test_voice > button {{
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.15) 0%, rgba(225, 29, 72, 0.25) 100%) !important;
+    border: 1px solid #F43F5E !important;
+    color: #FECDD3 !important;
+    font-weight: 700 !important;
+}}
+
+.st-key-btn_test_voice button:hover,
+div.st-key-btn_test_voice > button:hover {{
+    background: #F43F5E !important;
+    color: #FFFFFF !important;
+}}
+
+.st-key-btn_stop_voice button,
+div.st-key-btn_stop_voice > button,
+div[data-testid="stButton"].st-key-btn_stop_voice button {{
+    background: rgba(225, 29, 72, 0.2) !important;
+    border: 1px solid #E11D48 !important;
+    color: #FDA4AF !important;
+    font-weight: 800 !important;
+    box-shadow: 0 2px 8px rgba(225, 29, 72, 0.25) !important;
+    transition: all 0.2s ease !important;
+}}
+
+.st-key-btn_stop_voice button:hover,
+div.st-key-btn_stop_voice > button:hover,
+div[data-testid="stButton"].st-key-btn_stop_voice button:hover {{
+    background: #E11D48 !important;
+    color: #FFFFFF !important;
+    border-color: #FDA4AF !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.5) !important;
+}}
+
+div[data-testid="stButton"][class*="st-key-chip_"] button {{
+    background: rgba(30, 41, 59, 0.6) !important;
+    border: 1px solid #334155 !important;
+    color: #CBD5E1 !important;
+    font-size: 13px !important;
+    border-radius: 20px !important;
+    transition: all 0.2s ease !important;
+}}
+
+div[data-testid="stButton"][class*="st-key-chip_"] button:hover {{
+    border-color: #38BDF8 !important;
+    color: #38BDF8 !important;
+    background: rgba(56, 189, 248, 0.1) !important;
+    transform: translateY(-1px) !important;
+}}
+
 </style>
 """
 
